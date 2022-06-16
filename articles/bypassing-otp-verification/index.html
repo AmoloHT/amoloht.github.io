@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=1024">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+        <title>Amolo Hunters</title>
+
+        <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../css/bootstrap4-neon-glow.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel='stylesheet' href='//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
+    </head>
+    <body>
+        <div class="ht-tm-codeblock">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary ht-tm-element">
+          <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" style="font-weight: bold">Amolo Hunters</a>
+          <div class="navbar-collapse collapse" id="navbarTogglerDemo03" style="">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+              <li class="nav-item active">
+                <a href="../../" class="ht-tm-element btn btn-primary">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../articles" class="ht-tm-element btn btn-primary">Artigos</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../hacktivism" class="ht-tm-element btn btn-primary">Hacktivismo</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../users" class="ht-tm-element btn btn-primary">Usuários</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        </div>
+        <div class="container col-lg-9">
+            <div class="ht-tm-codeblock">
+            <div class="ht-tm-element jumbotron">
+              <h1 class="display-3" align="center" style="font-size: 30px"><b>Bypassing OTP verification</b></h1>
+              <div align="center">
+                <img src="intro.png" width="700" height="400"/><br><br>
+              </div>
+                <h2>Introduction</h2>
+                <p style="font-size: 18px">We know that security is the main method of defense against hacker attacks. Some of these safeguards have not been prevailed, which leads to false security and user credibility regarding the security of their account. One-time password (OTP) is one of the ways to protect your account, but like other security methods, it may contain some vulnerability.</p><br>
+                <h2>What is OTP?</h2>
+                <p style="font-size: 18px">One-time password, or commonly called OTP, is an automatically generated 6-digit code that authenticates a user to their account. The OTP acts as a second and more secure password, especially if the user’s password is weak or reused.</p><br>
+                <h2>Bypassing OTP verification</h2>
+                <p style="font-size: 18px">One of the ways to bypass OTP verification is by handling the response of a request. What you need to do is enter your credentials and put in a fake OTP code and capture the request. Then intercept the response and change the status code to 200, or some boolean from false to true. Look at the example:</p><br>
+                <p style="font-size: 18px">Let’s say an attacker has managed to obtain a target’s credentials and is about to log into the account.</p><br>
+                <div align="center"><img align="center" src="1.png" width="623" height="395"/></div><br>
+                <div align="center"><img align="center" src="2.png" width="547" height="305"/></div><br>
+                <p style="font-size: 18px">After the login request, the attacker is faced with two-factor authentication. The attacker adds fake code and captures the request.</p><br>
+                <div align="center"><img align="center" src="3.png" width="841" height="342"/></div><br>
+                <p style="font-size: 18px">The request was captured, now the attacker will capture the response.</p><br>
+                <div align="center"><img align="center" src="4.png" width="745" height="410"/></div><br>
+                <p style="font-size: 18px">The status code was 401, barring the fake user code. The attacker can change the status code from 401 to 200 in order to make the application accept the incorrect code.</p><br>
+                <div align="center"><img align="center" src="5.png" width="745" height="326"/></div><br>
+                <p style="font-size: 18px">After the change, it sends the response.</p><br>
+                <div align="center"><img align="center" src="6.png" width="664" height="434"/></div><br>
+                <p style="font-size: 18px">The server magically allows login to the account without having to use any OTP code, breaking the security of the system.</p><br>
+                <h2>Conclusion</h2>
+                <p style="font-size: 18px">We have learned that even what claims to be its security cannot be secure. There are numerous vulnerabilities around the world, we always need to validate the security of applications to prevent attacks from malicious people. Simple response manipulation allowed the attacker to break into a target’s account, so it’s important to maintain security.</p><br>
+            </div>
+          </div>
+    </div>
+    </body>
+</html>
