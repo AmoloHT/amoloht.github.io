@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=1024">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+        <title>Amolo Hunters</title>
+
+        <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../css/bootstrap4-neon-glow.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel='stylesheet' href='//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
+    </head>
+    <body>
+        <div class="ht-tm-codeblock">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary ht-tm-element">
+          <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" style="font-weight: bold">Amolo Hunters</a>
+          <div class="navbar-collapse collapse" id="navbarTogglerDemo03" style="">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+              <li class="nav-item active">
+                <a href="../../" class="ht-tm-element btn btn-primary">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../articles" class="ht-tm-element btn btn-primary">Articles</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../hacktivism" class="ht-tm-element btn btn-primary">Hacktivism</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../members" class="ht-tm-element btn btn-primary">Members</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        </div>
+        <div class="container col-lg-9">
+            <div class="ht-tm-codeblock">
+            <div class="ht-tm-element jumbotron">
+              <h1 class="display-3" align="center" style="font-size: 25px"><b>How I found an Open Redirect and scaled it to XSS Reflected APKPure</b></h1>
+              <div align="center">
+                <img src="xss.png" width="700" height="421"/><br><br>
+              </div>
+                <p style="font-size: 18px">Hi I’m Madson Will (mr_ofcodyx) member of Amolo Hunters.</p><br>
+                <h2>First I’ll show you how I found Open Redirect</h2>
+                <p style="font-size: 18px">1. I navigated to the apkpure.com website</p>
+                <p style="font-size: 18px">2. I searched for the robots.txt file in the uri</p>
+                <div align="center"><img align="center" src="1.png" width="381" height="179"/></div></br>
+                <p style="font-size: 18px">3. Copy the parameter url?q= and paste it in the uri and test the Open Redirect adding http://evil.com</p>
+                <div align="center"><img align="center" src="2.png" width="580" height="411"/></div><br>
+                <div align="center"><img align="center" src="3.png" width="700" height="348"/></div><br>
+                <h2>Scale to Reflected XSS Easy</h2>
+                <p style="font-size: 18px">1. Remove http://evil.com and add javascript:confirm(document.cookie)</p><br>
+                <div align="center"><img align="center" src="4.png" width="700" height="421"/></div><br>
+            </div>
+          </div>
+    </div>
+    </body>
+</html>
