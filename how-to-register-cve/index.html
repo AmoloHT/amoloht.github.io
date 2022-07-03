@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=1024">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+        <title>Amolo Hunters</title>
+
+        <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <link rel="stylesheet" href="../../css/bootstrap4-neon-glow.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel='stylesheet' href='//cdn.jsdelivr.net/font-hack/2.020/css/hack.min.css'>
+    </head>
+    <body>
+        <div class="ht-tm-codeblock">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary ht-tm-element">
+          <button class="navbar-toggler navbar-toggler-right collapsed" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" style="font-weight: bold">Amolo Hunters</a>
+          <div class="navbar-collapse collapse" id="navbarTogglerDemo03" style="">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+              <li class="nav-item active">
+                <a href="../../" class="ht-tm-element btn btn-primary">Home</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../articles" class="ht-tm-element btn btn-primary">Articles</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../hacktivism" class="ht-tm-element btn btn-primary">Hacktivism</a>
+              </li>
+              <li class="nav-item active">
+                <a href="../../members" class="ht-tm-element btn btn-primary">Members</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        </div>
+        <div class="container col-lg-9">
+            <div class="ht-tm-codeblock">
+            <div class="ht-tm-element jumbotron">
+              <h1 class="display-3" align="center" style="font-size: 30px"><b>How to register and publish a Common Vulnerabilities and Exposures (CVE)</b></h1>
+              <div align="center">
+                <img src="intro.jpeg" width="700" height="350"/><br>
+                <a href="https://medium.com/@mrempy/how-to-register-and-publish-a-common-vulnerabilities-and-exposures-cve-88512f4f7b1c">Original Article</a><br><br>
+              </div>
+                <h2>What is a CVE?</h2>
+                <p style="font-size: 18px">Common Vulnerabilities and Exposures or popularly known as CVE, is a database that has several records of failures found in company products. These vulnerabilities found are assigned an ID number, for example:</p><br>
+                <p style="font-size: 18px">CVE-YYYY-NNNN</p><br>
+                <p style="font-size: 18px">After the word “CVE”, we have the year that the CVE was published, then the identification number that can be composed of a box of 4 to 5 numbers. With this ID we can find the description of a vulnerability that occurs in a product.</p><br>
+                <h2>Reporting the vulnerability to the enterprise</h2>
+                <p style="font-size: 18px">When I found a vulnerability in one of a company’s products, I looked for a support or security email address to report the finding. Upon finding it I went into my email box and started describing the vulnerability found.</p><br>
+                <p style="font-size: 18px">“The FLEX 1085 Web hardware is vulnerable to an HTML injection attack that allows the injection of arbitrary HTML code”.</p><br>
+                <p style="font-size: 18px">This was the description given by me about the failure, it was very simple because it was my first time reporting a security issue.</p><br>
+                <p style="font-size: 18px">The main points of my report were summary, steps to reproduce, impact, mitigation and additional information. In the first topic I described the vulnerability, as shown in the example above. In the second topic I brought the proof of concept (PoC) demonstrating how to exploit the flaw, I created a detailed walkthrough. Third topic I described what security impact this vulnerability had on your customers. Fourth thread I commented on how the problem could be resolved, I always add this thread to help developers fix the vulnerability, the more information you are on the product, the better your comment will be. Fifth topic I add some information about used firmware version and model.</p><br>
+                <p style="font-size: 18px">After reporting the security issue, I waited a few days for a response to my email, 30 days passed after the report and no news, another 30 days passed and no response. I follow a policy of disclosing a vulnerability after 90 days if I don’t get a response, if I get a response, I would ask the company if I could fully disclose the vulnerability or just file a CVE on the case, as I haven’t had answer after 4 months I decided to publish it.</p><br>
+                <p style="font-size: 18px">Note: if the company had a Responsible Disclosure Program (RDP) or Vulnerability Disclosure Policy (VDP), it is mandatory to follow their policy, never do anything outside the given policy.</p><br>
+                <h2>Disclosure</h2>
+                <p style="font-size: 18px">First platform where I disclosed the vulnerability was in the Exploit Database. I wrote an email to submit@offsec.com with a template similar to the other exploits released. I sent the email on Sunday, November 21, 2022, on November 23, I received an email saying that the fault had been disclosed.</p><br>
+                <div align="center"><img align="center" src="1.png" width="662" height="267"/></div><br>
+                <p style="font-size: 18px">When I looked for it I saw that they had already been published. After that I looked up how to apply for a CVE, I found articles commenting on how to apply, but the first time I tried to report on cveform.mitre.org I was unsuccessful.</p><br>
+                <h2>Applying for a CVE</h2>
+                <p style="font-size: 18px">In March 2022 I found a site called VulDB, where it stored a list of security flaws, I created an account on the site and started browsing through it until I found a vulnerability submission part.</p><br>
+                <div align="center"><img align="center" src="2.png" width="700" height="322"/></div><br>
+                <p style="font-size: 18px">“VulDB is an authorized CNA (CVE Numbering Authorities) which is allowed to assign and disclose CVEs to all new vulnerabilities”.</p><br>
+                <p style="font-size: 18px">This sentence caught my attention, I was still lost on the subject of requesting a CVE. As mentioned above, CVE Numbering Authorities, or CNA, is an organization that is allowed to assign CVE to vulnerabilities found. After that I started to prepare my report about the security breach and send it to them on March 5, 2022.</p><br>
+                <div align="center"><img align="center" src="3.png" width="700" height="39"/></div><br>
+                <p style="font-size: 18px">Check this box if you want them to add a CVE about their find.</p><br>
+                <div align="center"><img align="center" src="4.png" width="700" height="248"/></div><br>
+                <p style="font-size: 18px">After the vulnerability report for VulnDB, on March 13, 2022 the submission was accepted and was already public. There was not much detail in the description due to lack of information given to the organization to assemble the description.</p><br>
+                <p style="font-size: 18px">On March 23, 2022 I received an email about the CVE requests, they asked me to confirm the CVE request. The other day after my confirmation, I received the CVE ID in another email sent by them.</p><br>
+                <p style="font-size: 18px">On March 29th my CVE was registered in Mitre.</p><br>
+                <div align="center"><img align="center" src="5.png" width="700" height="306"/></div><br>
+                <p style="font-size: 18px">It was a pleasure to have achieved this goal. Hope you get your CVE too.</p><br>
+            </div>
+          </div>
+    </div>
+    </body>
+</html>
