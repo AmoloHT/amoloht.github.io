@@ -1,89 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt">
-    <style>
-	.ascii {
-        color: black;
-        padding: 30px;
-        text-align: center;
-        background-image: url('asciiart.png');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-color: black;
-	}
-
-    .nav {
-        overflow: hidden;
-        background-color: rgb(5, 5, 5);
+<script type="text/javascript">
+    var browserlang = navigator.language || navigator.userLanguage; 
+    if (browserlang == "pt-PT") {
+        window.location.href = "pt/";
     }
-    
-    .nav a {
-        float: left;
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        font-family: monospace;
+    else if (browserlang == "en-EN") {
+        window.location.href = "en/";
+    } else {
+        window.location.href = "en/";
     }
-    
-    .nav a:hover {
-        background-color: rgb(160, 13, 197);
-        color: white;
-    }
-
-    .card {
-    color: #000;
-    background-color: #aaa;
-    padding: 20px;
-    margin-top: 20px;
-    }
-    </style>
-    <title>Home - Amolo Hunters</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=1024">
-    <meta name="viewport" content="width=1024">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <body style="background-color:black;">
-        <div class="nav">
-            <a href="index.html">Home</a>
-            <a href="papers/">Papers</a>
-            <a href="hacktivism/">Hacktivism</a>
-            <a href="members/">Members</a>
-        </div>
-        <div class="ascii">
-            <h1 style="color:black;" align="right">.</h1>
-            <h1 style="color:black;" align="right">.</h1>
-        </div>
-        <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">Welcome!</h1>
-
-        <div>
-            <center>
-                <div class="" style="color:white;font-family:monospace;">
-                    <table class="" style="color:white;">
-                        <tr>
-                          <td><pre>           
-                            _--_
-                            /   -)
-                        ___/___|___
-           ____-----=~~///|     ||||~~~==-----_____
-         //~////////////~/|     |//|||||\\\\\\\\\\\\\
-       ////////////////////|   |///////|\\\\\\\\\\\\\\\
-      /////~~~~~~~~~~~~~~~\ |.||/~~~~~~~~~~~~~~~~~`\\\\\
-     //~                  /\\|\\                      ~\\
-                         ///W^\W\
-                        ////|||\\\
-                        ~~~~~~~~~~                 </pre></td>
-                          <td><p align="left"><a class="">We are a team focused on information security, working mainly in the area of Bug Bounty.
-      We know that the number of cyber attacks is increasing every day, our mission as security researchers is to help companies against these types of attacks, strengthening security, confidentiality and integrity.</a></p><br>
-                          <div align="right">
-                              <a class="" style="color:white" href="https://twitter.com/AmoloHT" role="button">Twitter</a>
-                              <a class="" style="color:white" href="https://www.instagram.com/amoloht/" role="button">Instagram</a>
-                              <a class="" style="color:white" href="https://medium.com/@amoloht" role="button">Medium</a></td>
-                          </div>
-                        </tr>
-                    </table>
-                </div>
-            </center>
-        </div>
-    </body>
+</script>
 </html>
