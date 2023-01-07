@@ -142,12 +142,12 @@
     
     
     
-                                ((((((((Desync com Transfer-Encoding))))))))
+                                ((((((((Desync CL.TE )))))))))
     
     
     
-    - Se uma requisição receber Transfer-Encoding e Content-Length, o Transfer-Encoding ele tem que ignorar o Content-Length
-    e priorizar o Transfer-Encoding
+    - Se uma requisição receber Transfer-Encoding e Content-Length, no back-end ele tem que ignorar o Content-Length
+    e priorizar o Transfer-Encoding, o front-end vai usar o Content-Length  e ignorar o Transfer-Encodig 
     
     
                                 EX:
@@ -156,8 +156,8 @@
     POST /home HTTP/1.1                                       POST /home HTTP/1.1 
     Host: localhost                                           Host: localhost
     Content-Length: 6(lb)                                    Content-Length: 6(lb)
-    Transfer-Encoding: chunked(ignorado)                     Transfer-Encoding: chunked (ele implemento a regra ou seja o 
-                                                                Content-Length foi ignorado)
+    Transfer-Encoding: chunked (ignorado)                     Transfer-Encoding: chunked (ele implemento a regra ou seja o 
+                                                                Content-Length foi ignorado pelo back-end)
                 
     
     0                                                            0
@@ -170,11 +170,18 @@
     - o chunked serve para enviar as requisições divididas
     
     
-    - 0 indica o tamanho da parte que está enviando ou seja ele serve como um Content-Length  (temos que botar esse número em hexa
-    decimal, porém não precisamos botar o numero antes do x e nem o x)
+    - 0 indica que a solicitação terminou, usamos isso quando estivermos usando o Transfer-Encoding
     
     
-    - Em alguns cenários podemos fazer o LB ignorar o  Transfer-Encoding para passar para o back-end, esses cenários são:
+    
+    
+                                  (((((((( Desync TE.TE )))))))
+                                  
+    
+    
+    - Nesse outro cenário ambos suportam o Transfer-Encoding
+    
+    - Podemos fazer o LB ignorar o  Transfer-Encoding para passar para o back-end, esses cenários são:
         
             colocar um espaço antes do Transfer-Encoding,
             
@@ -183,14 +190,45 @@
             
             colocar um /t invertido em hexadecimal, para fazer isso vamos para o repeater aperte na opção hex e procure o espaço,
             e troque o hex do espaço por 0b
+            
+    
+    - Isso serve para conseguirmos bypassar validações feitas em alguns dos lados, assim fazendo só um lado ler o Transfer-Encoding efetuando o bypass  
+    
+    
+                                  
+                                  
+                                  ((((((( Desync TE.CL )))))))
+                                  
+                             
+    - Aqui, o Transfer-Encoding é lido pelo front-end eo Content-Length pelo  back-end
+    
+    
+    LB:
+    
+    POST /sniss  HTTP /1.1                               POST /sniss  HTTP /1.1
+    Host: vuln.com                                       Host: vuln.com  
+    Transfer-Encoding: chunked (lido pelo front)         Tranfer-Encoding: chunked (ignorado)
+    Content-Length: 7 (ignorado)                         Content-Length: 7 (lido pelo back-end)
+    
+   
+    5                                                    5
+    ----- Outra req -----                                ---- Outra req ----
+    SNISS                                                SNISS
+    0                                                    0
     
     
     
-    OBS:(Se o ataque não estiver funcionando mande-o para o intruder, aperte no clean, na opção Payloads sete como Null Payloads
-    e marque a opção Continue Indefinitely, na opção Options desmarque o Update Content-Length e o Connection Close)
+    - 5 é o tamanho da nova requisição ou seja a "SNISS" , temos  que botar o tamanho da nova requisição em hexadecimal
+    
+    
+    OBS(Você precisa incluir a sequência final \r\n\r\n seguindo a final 0)
+    
+    
+    
     
         
-    
+    OBS:(Se o ataque não estiver funcionando mande-o para o intruder, aperte no clean, na opção Payloads sete como Null Payloads
+    e marque a opção Continue Indefinitely, na opção Options desmarque o Update Content-Length e o Connection Close)
     
     
                                 (((( Exploração  Http Smuggling + Host Header Injection))))
