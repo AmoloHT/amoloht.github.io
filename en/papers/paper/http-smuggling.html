@@ -142,12 +142,12 @@
     
     
     
-                                ((((((((Desync with Transfer-Encoding))))))))
+                                (((((((( Desync CL.TE ))))))))
     
     
     
-    - If a request receives Transfer-Encoding and Content-Length, the Transfer-Encoding it has to ignore the Content-Length
-     and prioritize Transfer-Encoding
+    - If a request receives Transfer-Encoding and Content-Length, in the backend it has to ignore the Content-Length
+    and prioritize Transfer-Encoding, front-end will use Content-Length and ignore Transfer-Encodig
     
     
                                 EX:
@@ -157,7 +157,7 @@
     Host: localhost                                           Host: localhost
     Content-Length: 6(lb)                                    Content-Length: 6(lb)
     Transfer-Encoding: chunked(ignored)                     Transfer-Encoding: chunked (he implements the rule i.e. the
-                                                                                        Content-Length was ignored)
+                                                                Content-Length was ignored by the backend)
                 
     
     0                                                            0
@@ -170,26 +170,60 @@
     - chunked is used to send split requests
     
     
-    - 0 indicates the size of the part being sent, that is, it serves as a Content-Length (we have to put this number in hex
-     decimal, but we don't need to put the number before the x and neither the x)
+    - 0 indicates that the request ended, we use this when using Transfer-Encoding
     
     
-    - In some scenarios we can make LB ignore the Transfer-Encoding to pass to the backend, these scenarios are:
+                                  (((((((( Desync TE.TE )))))))
+                                  
+                                  
+                                  
+    - In this other scenario both support Transfer-Encoding
+    
+    - We can make LB ignore Transfer-Encoding to pass to backend, these scenarios are:
         
-                put a space before the Transfer-Encoding,
-                        
-                put a special character (/t) replacing the space between the ":" and the chunked to do this select the space
-                and press tab
+            put a space before the Transfer-Encoding,
             
-                put an inverted /t in hexadecimal, to do this we go to the repeater press the hex option and look for the space,
-                and change the space hex to 0b
+            put a special character (/t) replacing the space between the ":" and the chunked to do this select the space
+            and press tab
+            
+            put an inverted /t in hexadecimal, to do this we go to the repeater press the hex option and look for the space,
+            and change the space hex to 0b
+            
     
-    
-    
-            Note: If the attack is not working, send it to the intruder, press clean, in the option Payloads seven as Null Payloads
-            and check the Continue Indefinitely option, in the Options option uncheck Update Content-Length and Connection Close
-    
+    - This is for us to be able to bypass validations made on some of the sides, thus making only one side read the Transfer-Encoding bypassing
         
+    
+    
+    (If the attack is not working, send it to the intruder, press clean, in the option Payloads seven as Null Payloads
+    and check the Continue Indefinitely option, in the Options option uncheck Update Content-Length and Connection Close)
+    
+    ((((((( Desync TE.CL )))))))
+                                  
+                             
+    - Here the Transfer-Encoding is read by the front-end and the Content-Length by the back-end
+    
+    
+    LB:
+    
+    POST /sniss HTTP /1.1                             POST /sniss HTTP /1.1
+    Host: vuln.com                                    Host: vuln.com
+    Transfer-Encoding: chunked (read by front)        Transfer-Encoding: chunked (ignored)
+    Content-Length: 7 (ignored)                       Content-Length: 7 (read by backend)
+    
+   
+    5                                                         5
+    ----- Other req -----                               ---- Other req ----
+    SNISS                                                    SNISS
+    0                                                         0
+    
+    
+    
+    - 5 is the size of the new request that is "SNISS", we have to put the size of the new request in hexadecimal
+    
+    
+    OBS(You need to include the final sequence \r\n\r\n following the final 0)
+    
+    
     
     
     
