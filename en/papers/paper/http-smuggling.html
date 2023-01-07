@@ -121,7 +121,7 @@
     POST /home HTTP/1.1                                       POST /home HTTP/1.1 
     Host: localhost                                           Host: localhost
     Content-Length: 55(lb)                                    Content-Length: 55(lb)
-    Content-Length: 13(back-end (only counts name=carlos))      Content-Length: 13(back-end)
+    Content-Length: 13(back-end (only counts name=carlos))    Content-Length: 13(back-end)
     Content-Type: application/-www-form-urlencoded            Content-Type: application/-www-form-urlencoded
     
     
@@ -153,11 +153,11 @@
                                 EX:
     LB:
                     
-    POST /home HTTP/1.1                                       POST /home HTTP/1.1 
-    Host: localhost                                           Host: localhost
+    POST /home HTTP/1.1                                      POST /home HTTP/1.1 
+    Host: localhost                                          Host: localhost
     Content-Length: 6(lb)                                    Content-Length: 6(lb)
-    Transfer-Encoding: chunked(ignored)                     Transfer-Encoding: chunked (he implements the rule i.e. the
-                                                                Content-Length was ignored by the backend)
+    Transfer-Encoding: chunked(ignored)                      Transfer-Encoding: chunked (he implements the rule i.e. the
+                                                             Content-Length was ignored by the backend)
                 
     
     0                                                            0
