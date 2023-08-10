@@ -96,15 +96,15 @@
             ▓▓▒▒                                                      ▒▒▓▓▓▓
             ▓▓▒▒                                                      ▒▒▓▓  
           ▓▓▓▓▒▒                                                      ▒▒▓▓  
-          ▓▓▒▒                     2. O que é ganchar?                ▒▒▓▓▓▓
+          ▓▓▒▒                     2. O que é Hook?                   ▒▒▓▓▓▓
           ▓▓▒▒                                                          ▒▒▓▓
           ▓▓▓▓▒▒                                                        ▒▒▓▓
             ▓▓▒▒                                                        ▒▒▓▓
-            ▓▓▒▒                3. Como Funciona o Gancho?            ▒▒▓▓▓▓
+            ▓▓▒▒                3. Como Funciona o Hook?              ▒▒▓▓▓▓
             ▓▓▒▒                                                      ▒▒▓▓  
             ▓▓▓▓▒▒                                                    ▒▒▓▓  
             ▓▓▒▒                                                      ▒▒▓▓  
-            ▓▓▓▓▒▒               4. Detectando os Engates             ▒▒▓▓▓▓
+            ▓▓▓▓▒▒               4. Detectando os Hooks               ▒▒▓▓▓▓
             ▓▓▒▒                                                        ▒▒▓▓
             ▓▓▒▒                                                        ▒▒▓▓
             ▓▓▒▒                                                        ▒▒▓▓
@@ -112,7 +112,7 @@
             ▓▓▒▒                                                      ▒▒▓▓▓▓
             ▓▓▒▒                                                      ▒▒▒▒  
             ▓▓▒▒                                                      ▒▒▒▒  
-          ▓▓▓▓▒▒                 6. Desengatando uma API              ▒▒▒▒  
+          ▓▓▓▓▒▒                 6. Unhooking uma API                 ▒▒▒▒  
           ▓▓▒▒                                                        ▒▒▓▓  
           ▓▓▓▓▒▒                                                      ▒▒▓▓▓▓
             ▓▓▒▒                                                      ▒▒▓▓
@@ -136,19 +136,19 @@
 
     
         ╔═════════════════════════╗
-        ║     O que é ganchar?    ║
+        ║      O que é Hook?      ║
         ╚═════════════════════════╝
 
-        Em programação, "Ganchar" refere-se à técnica de interceptar ou substituir o comportamento de uma função ou método por meio de hooks
-        (ganchos) para fins de modificação ou monitoramento. Isso geralmente é feito em nível de sistema operacional ou em aplicativos para
+        Em programação, "Hook" refere-se à técnica de interceptar ou substituir o comportamento de uma função ou método por meio de hooks
+        para fins de modificação ou monitoramento. Isso geralmente é feito em nível de sistema operacional ou em aplicativos para
         alterar o fluxo normal de execução de determinadas funcionalidades.
 
 
         ╔═════════════════════════════════╗
-        ║     Como funciona o gancho?     ║
+        ║      Como funciona o Hook?      ║
         ╚═════════════════════════════════╝
 
-        A maioria dos sistemas EDR's usa ganchos para detectar ações maliciosas, com foco principal em API's Nativas do Windows, conhecidas
+        A maioria dos sistemas EDR's usa hooks para detectar ações maliciosas, com foco principal em API's Nativas do Windows, conhecidas
         como NTAPI. As API's Nativas do Windows é usada principalmente no desenvolvimento de componentes internos do sistema operacional,
         como drivers de dispositivo, subsistemas e serviços de sistema. Ela é implementada na biblioteca ntdll.dll (NT Layer DLL) e oferece
         funcionalidades de baixo nível para gerenciamento de processos, manipulação de memória, acesso a arquivos e registros, controle de
@@ -165,7 +165,7 @@
         
 
         ╔═══════════════════════════════╗
-        ║     Detectando os Engates     ║
+        ║      Detectando os Hooks      ║
         ╚═══════════════════════════════╝
 
         A ferramenta de depuração da Microsoft conhecida como WinDbg é uma ótima ferramenta para detectar se algum programa em execução
@@ -213,7 +213,7 @@
         ║ 00007ffe`2456db07 c3              ret                                                                       ║
         ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
-        Se houver algum gancho na NTAPI, a resultado será parecido com esse:
+        Se houver algum hook na NTAPI, a resultado será parecido com esse:
 
         ╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
         ║ Microsoft (R) Windows Debugger Version 10.0.22621.755 AMD64                                                 ║
@@ -279,7 +279,7 @@
         ║ ...                                                                                       ║
         ╚═══════════════════════════════════════════════════════════════════════════════════════════╝
 
-        Para remover o gancho da DLL do EDR no processo, é preciso substituir os 5 primeiros bytes através do endereço de memória da NTAPI.
+        Para remover o hook da DLL do EDR no processo, é preciso substituir os 5 primeiros bytes através do endereço de memória da NTAPI.
 
 
         ╔═════════════════════════╗
@@ -319,13 +319,13 @@
 
 
         ╔══════════════════════════════╗
-        ║     Desengatando uma API     ║
+        ║       Unhooking uma API      ║
         ╚══════════════════════════════╝
 
-        Para desengatar o gancho, é necessário escrever na memória do processo os cincos bytes originais no endereço de memória da NTAPI.
+        Para desengatar o hook, é necessário escrever na memória do processo os cincos bytes originais no endereço de memória da NTAPI.
         Para essa tarefa, iremos utilizar a API do Windows conhecida como WriteProcessMemory em um código C.
 
-        O código abaixo é a implementação de WriteProcessMemory para corrigir engatamento para voltar a rotina padrão da NTAPI:
+        O código abaixo é a implementação de WriteProcessMemory para corrigir o hook para voltar a rotina padrão da NTAPI:
 
         Definição de NtCreateFile
         ╔════════════════════════════════════════════════════════╗
@@ -354,10 +354,10 @@
         ╚═════════════════════════════════════════════════════════════════════════════════════════╝
 
         Enquanto o programa não passar pela função "WriteProcessMemory", a NTAPI NtCreateFile estará sendo engatada e monitorada pelo EDR.
-        A partir do momento que o programa passar da função "WriteProcessMemory", a NTAPI será restaurada ao padrão e não haverá um gancho
+        A partir do momento que o programa passar da função "WriteProcessMemory", a NTAPI será restaurada ao padrão e não haverá um hook
         sobre ela, resultando em um desengate de API do Windows.
 
-        O código abaixo representa o código completo do meu programa que irá desengatar o gancho da NTAPI NtCreateFile:
+        O código abaixo representa o código completo do meu programa que irá desengatar o hook da NTAPI NtCreateFile:
 
         ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
         ║  #include <.Windows.h>                                                                                     ║
