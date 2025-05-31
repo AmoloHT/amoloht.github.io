@@ -1,21 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt">
-<script type="text/javascript">
-    if (window.location.protocol === 'http:') {
-        var newUrl = window.location.href.replace(/^http:/, 'https:');
-        window.location.href = newUrl;
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>01/06 - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('fonts/EnglishTowne.ttf') format('truetype');
     }
-    
-    var browserlang = navigator.language || navigator.userLanguage; 
-    if (browserlang == "pt-PT") {
-        window.location.href = "pt/";
+
+    body {
+        background-image: url('imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
     }
-    else if (browserlang == "pt-BR") {
-        window.location.href = "pt/";
-    } else if (browserlang == "en-EN") {
-        window.location.href = "en/";
-    } else {
-        window.location.href = "en/";
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
     }
-</script>
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0;
+		padding: 0;
+	}
+
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body></br></br></br>
+    <div class="pre-container">
+        <pre>		
+            <p style="color:rgb(92, 53, 219); font-size:15px;">
+                                ▓█████  ███▄ ▄███▓    ▄▄▄▄    ██▀███  ▓█████ ██▒   █▓▓█████                
+                                ▓█   ▀ ▓██▒▀█▀ ██▒   ▓█████▄ ▓██ ▒ ██▒▓█   ▀▓██░   █▒▓█   ▀                
+                                ▒███   ▓██    ▓██░   ▒██▒ ▄██▓██ ░▄█ ▒▒███   ▓██  █▒░▒███                  
+                                ▒▓█  ▄ ▒██    ▒██    ▒██░█▀  ▒██▀▀█▄  ▒▓█  ▄  ▒██ █░░▒▓█  ▄                
+                                ░▒████▒▒██▒   ░██▒   ░▓█  ▀█▓░██▓ ▒██▒░▒████▒  ▒▀█░  ░▒████▒ ██▓  ██▓  ██▓ 
+                                ░░ ▒░ ░░ ▒░   ░  ░   ░▒▓███▀▒░ ▒▓ ░▒▓░░░ ▒░ ░  ░ ▐░  ░░ ▒░ ░ ▒▓▒  ▒▓▒  ▒▓▒ 
+                                ░ ░  ░░  ░      ░   ▒░▒   ░   ░▒ ░ ▒░ ░ ░  ░  ░ ░░   ░ ░  ░ ░▒   ░▒   ░▒  
+                                ░   ░      ░       ░    ░   ░░   ░    ░       ░░     ░    ░    ░    ░   
+                                ░  ░       ░       ░         ░        ░  ░     ░     ░  ░  ░    ░    ░  
+                                                        ░                     ░            ░    ░    ░  </p>                                               
+
+                                                                                                    ⣴⠀⣀⣤⣴⣶⣾⣿⣿⣿⣿⣿⣿⣷⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                                                                                    ⢾⣷⣿⣿⣿⣿⣿⠿⠟⠛⠉⠉⠉⠉⠉⠙⠳⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                                                                                    ⠘⢿⡏⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀
+⢀⡀                                                                                                   ⠸⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡴⠒⠒⠒⠒⢢⣤⠀⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀
+⠀⢻⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠                                                                                      ⢿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠀⠀⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀
+⠀⠸⠀⠇⠀⠀⠀⠀⠀⠀⠀⠀⢠⡼                                        01/06                                         ⠘⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣷⣿⡆⠀⠀
+⠀⡿⠲⠀⠐⠀⠀⠀⠀⠀⠀⠀⢲⠸⡄                                                     01/06                            ⢻⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀
+⠀⢧⠀⠙⣀⠀⠀⠀⠀⠀⠀⣸⡟⢠⡄                                                                                      ⠘⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣤⣤⣤⣄⣠⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠰⡄⠀⠈⠀⢦⠀⠀⠀⢀⣻⠁⠼                             01/06                       01/06                          ⣿⣶⡄⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠨⡄⠀⠈⢯⣁⠀⣠⡴⡍⡴⠁                                            01/06                                       ⠻⣿⣿⣄⠀⠀⠀⠀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠈⠢⠀⠈⡉⣭⣳⣿⠕                      01/06                                                                ⢹⡌⢻⣿⣦⣄⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡼⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠀⢠⡐⢿⡿⣯⣿⣈⢷⡦         01/06                                                                            ⠘⣧⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠁⢹⣿⡇⢿⣿⣿⣿⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⣰⠟⡰⣿⡷⢵⢮⢯⣅⡟⠈⠀                                       01/06                                             ⢹⣄⣀⣀⠈⠛⢻⣿⣿⣿⣿⡏⠀⠀⠀⣿⣿⠀⣿⣿⣿⣿⣿⣿⡇⠀⠀
+⠀⠀⠈⠼⠿⢘⠁⢻⣯⢎⢵⡧⠻⠶                         01/06                                                            ⠈⣯⠉⠀⠀⠀⢸⣿⣿⣿⣿⣆⠀⠀⠀⢿⣿⡇⠸⣿⣿⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠈⠡⢄⠫⠋⠘⠁                                                                                              ⢹⡆⠀⠀⠀⢸⣿⣿⣿⣿⣿⣧⠀⠀⠘⣿⡇⠀⢹⣿⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⡷⣗⠇                                                                                                 ⠈⣷⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⠀⢹⣧⡀⠀⣿⣿⣿⣿⡿⠀⠀
+⠀⠀⠀⠀⠀⠀⡰⣷⣿                                                                                                   ⢹⡆⠀⠀⢸⣿⣿⣿⣿⣿⣿⣧⠀⠀⣿⣿⣷⣄⢹⣿⣿⣿⡇⠀⠀
+⠀⠀⠀⠀⠀⡨⡿⢿⠇                           01/06                                                                    ⣷⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⡄⠀⢿⣿⢿⡻⢝⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⢸⡿                                                                                                     ⢹⡆⠀⢸⣿⣿⣿⣿⣿⣿⣿⣷⠀⠐⠈⠁⠁⠀⣿⣿⣿⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠸⠇                                                                                                      ⣷⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⢸⣿⡟⠀⠀⠀
+                           01/06                                                                               ⢸⡇⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠘⣿⠃⠀⠀⠀
+                                                                                                                ⣿⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠏⠀⠀⠀⠀
+     01/06                                                                                                      ⢸⡇⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                01/06                                                                                            ⢿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀
+                                                                                                                 ⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀
+                           01/06                                                                                   ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀
+             01/06                                                                                              ⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀
+    01/06                                                                                                      ⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀
+                                                                                                                ⠿⠟⠛⠛⠿⠿⠿⠿⠿⣿⣿⣿⣿⠿⠿⠿⢿⠿⠟⠛⠛⠃
+                </pre>                    
+        </div>
+    </body>
 </html>
