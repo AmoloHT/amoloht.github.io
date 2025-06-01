@@ -228,9 +228,9 @@ Agora, iremos escrever um simples LKM que ao inserido ele vai printar "Olá, Mun
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
 kali@kali ~/paper
 ❯ cat lkm.c
-#include <.linux/init.h>
-#include <.linux/module.h>
-#include <.linux/kernel.h>
+#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("MatheuZ");
@@ -256,12 +256,12 @@ kali@kali ~/paper
 Bom, irei explicar linha por linha, vamos lá!
 
 ╠══════════════════════════════════╣
-#include <.linux/init.h>
-#include <.linux/module.h>
-#include <.linux/kernel.h>
+#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
 ╠══════════════════════════════════╣
 
-Antes de mais nada, precisamos incluir alguns cabeçalhos, que são nossos #include's e sempre serão necessários os incluir para o desenvolvimento de módulos do kernel do Linux. O cabeçalho "<.linux/init.h>"" contém definições de funções de inicialização, o cabeçalho "<.linux/module.h>" contém as definições relacionadas a módulos do kernel, e por ultimo o cabeçalho "<.linux/kernel.h>"" contém as definições de funções e macros básicas do kernel.
+Antes de mais nada, precisamos incluir alguns cabeçalhos, que são nossos #include's e sempre serão necessários os incluir para o desenvolvimento de módulos do kernel do Linux. O cabeçalho "&lt;linux/init.h&gt;" contém definições de funções de inicialização, o cabeçalho "&lt;linux/module.h&gt;" contém as definições relacionadas a módulos do kernel, e por ultimo o cabeçalho "&lt;linux/kernel.h&gt;" contém as definições de funções e macros básicas do kernel.
 
 ╔════════════════════════════════════════╗
 
