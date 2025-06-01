@@ -228,9 +228,9 @@ Now, we'll write a simple LKM that, when inserted, will print "Hello, World!" in
 ◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
 kali@kali ~/paper
 ❯ cat lkm.c
-#include <.linux/init.h>
-#include <.linux/module.h>
-#include <.linux/kernel.h>
+#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("MatheuZ");
@@ -256,12 +256,12 @@ kali@kali ~/paper
 Well, I'll explain it line by line, let's go!
 
 ╠══════════════════════════════════╣
-#include <.linux/init.h>
-#include <.linux/module.h>
-#include <.linux/kernel.h>
+#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
 ╠══════════════════════════════════╣
 
-First of all, we need to include some headers, which are our #include's and will always be necessary to include them for the development of Linux kernel modules. The header "<.linux/init.h>"" contains definitions of initialization functions, the header "<.linux/module.h>" contains definitions related to kernel modules, and finally the header "<.linux/kernel.h>"" contains definitions of basic kernel functions and macros.
+First of all, we need to include some headers, which are our #include's and will always be necessary to include them for the development of Linux kernel modules. The header "&lt;linux/init.h&gt;" contains definitions of initialization functions, the header "&lt;linux/module.h&gt;" contains definitions related to kernel modules, and finally the header "&lt;linux/kernel.h&gt;" contains definitions of basic kernel functions and macros.
 
 ╔═════════════════════════════════════════╗
 
