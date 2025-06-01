@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Introdução ao Loadable Kernel Module (LKM) - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Membros❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        Introdução ao Loadable Kernel Module (LKM)
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Autor: @matheuzsec
+	</p>
+
+    <div class="pre-container">
+        <pre>
+#!/usr/sbin/insmod demonized-lkm.ko && dmesg -C
+#############################################################################
+##                                                                         ##       // Learning LKM
+##               Introdução ao Loadable Kernel Module (LKM)                ##
+##                                                                         ##
+=======================================[*]===================================                         *************
+##                            ___    -_  _-    ___                         ##                         *  SUMÁRIO  *
+##                      _--~~~#####//      \\#####~~~--__                  ##                         *************
+##                   _-~##########// (    ) \\##########~-_                ##                               |
+##                  -############//  :\^^/:  \\############-               ##   #####################################################
+##                _~############//   (@::@)   \\############~_             ##   ##                                                 ##
+##               ~#############((     \\//     ))#############~            ##   ## [1] O que é LKM?                                ##
+##              -###############\\    (oo)    //###############-           ##   ## [2] Em qual "ring" os LKM's atuam?              ##
+##             -#################\\  / "" \  //#################-          ##   ## [3] Diferença de ring0 e root                   ##
+##            -###################\\/      \//###################-         ####### [4] Duas Vantagens e Desvantagens do uso de LKM ##
+##           _#/:##########/\######(   /\   )######/\##########:\#_        ##   ## [5] Por que Alguém Malicioso Usaria LKM?        ##
+##           :/ :#/\#/\#/\/  \#/\##\  :  :  /##/\#/  \/\#/\#/\#: \:        ##   ## [6] Escrevendo nosso LKM                        ##
+##           "  :/  V  V  "   V  \#\: :  : :/#/  V   "  V  V  \:  "        ##   ## [7] Escondendo do lsmod o LKM                   ##
+##                  "  "      "   / : :  : : \   "      "  "   "           ##   ## [8] Considerações Finais                        ##
+##                              __\ : :  : : /__                           ##   #####################################################
+##                             (vvv(VVV)(VVV)vvv)                          ## 
+#############################################################################
+
+
+
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+			              -=-=] O que é LKM? [=-=-
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Os Loadable Kernel Modules (LKM) são arquivos de código objeto que podem ser carregados e descarregados dinamicamente no kernel do Linux. 
+
+Eles são projetados para estender a funcionalidade do kernel, adicionando recursos específicos ou alterando seu comportamento de maneira flexível. 
+
+Os módulos podem ser carregados ou removidos conforme necessário, sem a necessidade de reinicializar todo o sistema.
+
+
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+			      -=-=] Em qual "Ring" os LKM's atuam?[=-=-
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Para entender onde os LKM's operam no sistema, é necessário entender o conceito de anéis (ring) de proteção. 
+
+O kernel do Linux possui quatro anéis (ring) de proteção (0 a 3) sendo eles;
+
+-> ring 0 : Kernel Mode
+-> ring 1 e 2 : Device Drivers
+-> ring 3 : User Mode
+
+- Ring 0 : É o mais privilegiado.
+- Ring 1/2 :  É um modo menos privilegiado em comparação com o ring 0.
+- Ring 3 : É o menos privilegiado. 
+
+Os LKMs são carregados no ring 0, ou seja, no espaço do kernel (kernel space), permitindo que eles acessem recursos e execute operações de uma maneira mais privilegiada.
+
+
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+				-=-=] Diferença de ring0 e root [=-=-
+			  =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+O "Ring 0" refere-se a um dos níveis de privilégio em um sistema operacional. 
+
+É o nível mais alto de privilégio, também chamado de "kernel mode". 
+
+Quando um processo ou código está sendo executado no ring 0, ele tem acesso total a todos os recursos do sistema, incluindo o controle total do hardware e a capacidade de executar instruções privilegiadas. O ring 0 é geralmente reservado para o kernel do sistema operacional e seus componentes críticos.
+
+Por outro lado, "root" refere-se a uma conta de usuário especial em sistemas baseados em Unix/Linux.
+
+O "root" é o equivalente ao "super usuário" ou "administrador" em outros sistemas operacionais. O usuário "root" tem privilégios completos e controle total sobre o sistema, sem restrições. Esses privilégios incluem a capacidade de modificar arquivos do sistema, instalar software, criar e gerenciar contas de usuário, entre outros.
+
+No entanto, o Ring 0 é o nível mais alto de privilégios de acesso ao hardware em um sistema operacional, enquanto o root é o superusuário com privilégios administrativos completos em sistemas operacionais baseados em Unix/Linux.
+
+
+			  =-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+			    -=-=] Duas Vantagens e Desvantagens do uso de LKM [=-=-
+			  =-=-==-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+[Vantagens]
+
+1 - Sem duvidas uma das maiores vantagens de usar LKM, é sua extensibilidade. Os LKMs permitem que o kernel seja estendido com novos recursos ou suporte a dispositivos sem a necessidade de alterações no código-fonte principal do kernel. Isso possibilita a adição de suporte a hardware específico ou a implementação de protocolos adicionais por exemplo.
+
+2 - Uma outra vantagem também é sua modularidade, o uso de LKMs permite adicionar ou remover funcionalidades específicas do kernel sem afetar o restante do sistema operacional. Isso oferece flexibilidade e facilita a manutenção do sistema.
+
+[Desvantagens]
+
+1 - Sem duvidas uma das maiores desvantagens é a dependência e a incompatibilidade de versões do kernel. Os LKMs geralmente são bem dependentes de versões bem específicas do kernel Linux. Isso significa que, quando o kernel é atualizado, os módulos também podem precisar ser atualizados ou modificados para poderem funcionar corretamente.
+
+2 - Um outro ponto que devemos citar, é a complexidade de desenvolvimento de um LKM. Desenvolver um LKM requer um conhecimento mais aprofundado do kernel do Linux e de seus mecanismos internos, e ter um conhecimento em C é essencial para poder começar a desenvolver nossos LKM's. Sem duvida alguma que desenvolver um LKM não é uma tarefa facil!
+
+
+			  =-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+			      -=-=] por que alguém malicioso usaria LKM? [=-=-
+			  =-=-==-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+É comum que hackers explorem o poder de um LKM devido à sua atuação no kernel space e ao seu nível de privilégio elevado. 
+
+No entanto, como os hackers podem abusar desse alto poder dentro de um sistema? 
+
+Um ótimo exemplo significativo disso são os rootkits, que são softwares maliciosos, que se escondem no sistema, tornando sua detecção muito mais complexa.
+
+Com um rootkit, é possível, por exemplo, ocultar processos e diretórios, manter a persistência no sistema e, é claro, o objetivo principal de um rootkit é se ocultar no sistema, contornar as medidas de segurança e evitar detecção, proporcionando uma base sólida para ataques cibernéticos avançados.
+
+
+			  =-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+			                -=-=] Escrevendo nosso LKM [=-=-
+			  =-=-==-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Bom pessoal, finalmente chegamos na parte prática deste paper! 
+
+Agora, iremos escrever um simples LKM que ao inserido ele vai printar "Olá, Mundo!" no comando dmesg (que basicamente ele exibe mensagens do kernel), e quando o removermos o modulo, vai printar a mensagem "Adeus, Mundo!".
+
+* https://github.com/AmoloHT/PapersArchives/tree/main/lkm-introduction
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+kali@kali ~/paper
+❯ cat lkm.c
+#include <.linux/init.h>
+#include <.linux/module.h>
+#include <.linux/kernel.h>
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("MatheuZ");
+MODULE_DESCRIPTION("Introdução ao LKM");
+
+static int __init lkm_init(void)
+{
+	printk(KERN_INFO "Olá, Mundo!\n");
+	return 0;
+} 
+
+static void __exit lkm_exit(void)
+{
+	printk(KERN_INFO "Adeus, Mundo!\n");
+}
+
+module_init(lkm_init);
+module_exit(lkm_exit);
+kali@kali ~/paper
+❯
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Bom, irei explicar linha por linha, vamos lá!
+
+╠══════════════════════════════════╣
+#include <.linux/init.h>
+#include <.linux/module.h>
+#include <.linux/kernel.h>
+╠══════════════════════════════════╣
+
+Antes de mais nada, precisamos incluir alguns cabeçalhos, que são nossos #include's e sempre serão necessários os incluir para o desenvolvimento de módulos do kernel do Linux. O cabeçalho "<.linux/init.h>"" contém definições de funções de inicialização, o cabeçalho "<.linux/module.h>" contém as definições relacionadas a módulos do kernel, e por ultimo o cabeçalho "<.linux/kernel.h>"" contém as definições de funções e macros básicas do kernel.
+
+╔════════════════════════════════════════╗
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("MatheuZ");
+MODULE_DESCRIPTION("Introdução ao LKM");
+
+╚════════════════════════════════════════╝
+
+Essas linhas definem algumas informações do módulo. MODULE_LICENSE("GPL") significa que o módulo é licenciado sob a GPL (GNU General Public License). MODULE_AUTHOR especifica o autor do módulo e MODULE_DESCRIPTION nela você pode fornecer uma descrição do módulo.
+
+╔════════════════════════════════════════╗
+
+static int __init lkm_init(void)
+{
+	printk(KERN_INFO "Olá, Mundo!\n");
+	return 0;
+}
+
+╚════════════════════════════════════════╝
+
+Essa função é chamada quando o nosso módulo é carregado. Ela é marcada como __init, o que significa que é uma função de inicialização específica do Linux. Então basicamente essa função imprime uma mensagem "Olá, Mundo!" usando a função printk(KERN_INFO...) e logo em seguida, ela retorna 0 para indicar que a inicialização ocorreu com sucesso.
+
+╔════════════════════════════════════════╗
+
+static void __exit lkm_exit(void)
+{
+	printk(KERN_INFO "Adeus, Mundo!\n");
+}
+
+╚════════════════════════════════════════╝
+
+Essa função é chamada quando o nosso módulo é removido do kernel. Ela é marcada como __exit para indicar que é uma função de saída específica do Linux. Então basicamente essa função imprime uma mensagem "Adeus, Mundo!" usando a função printk(KERN_INFO...).
+
+╔════════════════════════════════════════╗
+
+module_init(lkm_init);
+module_exit(lkm_exit);
+
+╚════════════════════════════════════════╝
+
+Bom, e por ultimo essas duas linhas registram as funções de inicialização e saída do módulo. A função module_init especifica a função que será chamada durante a inicialização do módulo, e module_exit especifica a função que será chamada durante a saída do módulo.
+
+E Pronto! Muito simples não é pessoal? Agora podemos compilar nosso código usando um Makefile.
+
+- O que é um Makefile?
+
+Basicamente é uma configuração para automatizar compilação e construção de programas.
+
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+
+kali@kali ~/paper
+❯ cat Makefile
+obj-m := lkm.o
+CC = gcc -Wall
+KDIR := /lib/modules/$(shell uname -r)/build
+PWD := $(shell pwd)
+
+all:
+  $(MAKE) -C $(KDIR) M=$(PWD) modules
+
+clean:
+  $(MAKE) -C $(KDIR) M=$(PWD) clean
+kali@kali ~/paper
+❯
+
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Bom este será o nosso Makefile! E em resumo, esse Makefile compila o nosso LKM utilizando o diretório de build do kernel e o compilador gcc. A regra all compila o módulo e a regra clean remove os arquivos gerados.
+
+Agora vamos compilar nosso módulo utilizando o comando make!
+
+
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+
+kali@kali ~/paper
+❯ make
+make -C /lib/modules/6.1.0-kali7-amd64/build M=/home/kali/paper modules
+make[1]: Entering directory '/usr/src/linux-headers-6.1.0-kali7-amd64'
+  CC [M]  /home/kali/paper/lkm.o
+  MODPOST /home/kali/paper/Module.symvers
+  CC [M]  /home/kali/paper/lkm.mod.o
+  LD [M]  /home/kali/paper/lkm.ko
+  BTF [M] /home/kali/paper/lkm.ko
+Skipping BTF generation for /home/kali/paper/lkm.ko due to unavailability of vmlinux
+make[1]: Leaving directory '/usr/src/linux-headers-6.1.0-kali7-amd64'
+kali@kali ~/paper
+❯ file lkm.ko
+lkm.ko: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), BuildID[sha1]=06a39f9100f0d1735c2ff066dea1b562f928315b, with debug_info, not stripped
+kali@kali ~/paper
+❯
+
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Nosso LKM foi compilado com sucesso! E como podemos perceber, ele nos gerou o "lkm.ko", que é o nosso modulo que vamos inserir.
+
+- Mas o que significa esse .ko?
+
+Bom, .ko vem de kernel object.
+
+- Mas e agora, como vamos inserir nosso modulo, o que fazer??????
+
+Para podermos carregar nosso modulo, podemos usar o comando "insmod" que é usado para carregar um módulo no kernel Linux.
+
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+
+kali@kali ~/paper
+❯ sudo insmod lkm.ko
+kali@kali ~/paper
+❯ sudo dmesg
+[44749.460253] Olá, Mundo!
+kali@kali ~/paper
+❯lsmod |grep lkm
+lkm                    16384  0
+kali@kali ~/paper
+❯
+
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Como podemos ver nosso modulo foi carregado com sucesso e a mensagem "Olá, Mundo" foi printada também!!
+
+- Mas e agora, como remover o nosso modulo?
+
+Podemos usar o comando rmmod que é usado para remover um módulo do kernel Linux.
+
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+
+kali@kali ~/paper
+❯ sudo rmmod lkm
+kali@kali ~/paper
+❯ sudo dmesg
+[44749.460253] Olá, Mundo!
+[44889.895631] Adeus, Mundo!
+kali@kali ~/paper
+❯
+
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Como podemos ver, o "Adeus, Mundo!" foi printado na tela com sucesso ao remover nosso modulo.
+
+
+			  =-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+				  -=-=] Escondendo nosso LKM do lsmod [=-=-
+			  =-=-==-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Bom, achei que seria interessante mostrar neste paper também, como os hackers escondem seus LKM's do "lsmod" por exemplo, que o lsmod, ele lista todos os modulos que estão carregados no kernel linux.
+
+Aqui está um trecho de uma função que podemos utiliza-la para esconder nosso LKM, vou explicar linha por linha.
+
+╔════════════════════════════════════════╗
+
+void escondido(void)
+{
+	list_del(&THIS_MODULE->list);
+	kobject_del(&THIS_MODULE->mkobj.kobj);
+}
+
+╚════════════════════════════════════════╝
+
+-> list_del(&THIS_MODULE->list);
+
+Aqui basicamente, estamos removendo o módulo atual da lista de módulos carregados no kernel.
+
+-> kobject_del(&THIS_MODULE->mkobj.kobj);
+
+Nesta linha, estamos excluindo o objeto kernel (kobject) associado ao módulo atual.
+
+E em resumo, utilizamos essas instruções para "esconder" nosso módulo do kernel. Ao chamar essa função, o nosso módulo será removido da lista de módulos e o objeto kernel será excluído. Basicamente isso é feito para ocultar a presença do nosso módulo e evitar que seja listado como um módulo carregado no sistema, evitando sua detecção.
+
+Agora, nós vamos compilar outra vez nosso modulo usando o "make", e usar o insmod para carregar nosso LKM.
+
+◤━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◥
+
+kali@kali ~/paper
+❯ sudo insmod lkm.ko
+kali@kali ~/paper
+❯ lsmod |grep lkm
+kali@kali ~/paper
+❯ sudo dmesg
+[46326.643212] Olá, Mundo!
+kali@kali ~/paper
+❯ sudo rmmod lkm
+rmmod: ERROR: Module lkm is not currently loaded
+kali@kali ~/paper
+❯
+
+◣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━◢
+
+Muito Interessante não é?? 
+
+
+			  =-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=
+				       -=-=] Considerações Finais [=-=-
+			  =-=-==-=-==-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+Bom, chegamos no fim! Espero que vocês tenham aprendido e absorvido tudo o que quis passar aqui através deste paper! Um bom dia, boa tarde, boa noite e madrugada, Cya hackers! XDXDXDXDXDXD
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⣠⣼⠂⠀⠀⠀⠀⠙⣦⢀⠀⠀⠀⠀⠀⢶⣤⣀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⠷⢦⠀⣹⣶⣿⣦⣿⡘⣇⠀⠀⠀⢰⠾⣿⣿⣿⣟⣻⣿⣿⣿⣷⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⢺⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⢟⣥⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⢻⣿⣿⡏⢹⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣮⣝⢷⣄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢛⣿⣿⣿⡇⠀⠀⠀⠀⠛⣿⣿⣷⡀⠘⢿⣧⣻⡷⠀⠀⠀⠀⠀⠀⣿⣿⣿⣟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣝⢧⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢠⣾⣿⠟⣡⣾⣿⣿⣧⣿⡿⣋⣴⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⢻⣿⣿⣿⣶⡄⠙⠛⠁⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣷⣝⢻⣿⣟⣿⣿⣷⣮⡙⢿⣽⣆⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⡿⢋⣴⣿⣿⣿⣿⣿⣼⣯⣾⣿⣿⡿⣻⣿⣿⣿⣦⠀⠀⠀⠀⢀⣹⣿⣿⣿⣿⣶⣤⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⠻⣿⣿⣿⣮⣿⣿⣿⣿⣿⣿⣦⡙⢿⣇⠀⠀⠀⠀
+⠀⠀⠀⣠⡏⣰⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⡿⢋⣼⣿⣿⣿⣿⣿⣷⡤⠀⣠⣿MatheuZ⣿⣷⣄⠀⢠⣾⣿⣿⣿⣿⣿⣷⡜⢿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣦⡙⣦⠀⠀
+⠀⠀⣰⢿⣿⣿⠟⠋⣠⣾⣿⣿⣿⣿⣿⠛⢡⣾⡿⢻⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠻⣿⡟⣿⣿⣿⠻⢿⣿⣿⣿⣿⣿⣿⣿⣟⠻⣿⣆⠙⢿⣿⣿⣿⣿⣿⣦⡈⠻⣿⣿⣟⣧⠀⠀
+⠀⣰⢣⣿⡿⠃⣠⡾⠟⠁⠀⣸⣿⡟⠁⢀⣿⠋⢠⣿⡏⣿⣿⣿⣿⣿⢿⠁⢀⣠⣴⢿⣷⣿⣿⣿⠀⠀⠽⢻⣿⣿⣿⣿⡼⣿⡇⠈⢿⡆⠀⠻⣿⣧⠀⠈⠙⢿⣆⠈⠻⣿⣎⢧⠀
+⠀⢣⣿⠟⢀⡼⠋⠀⠀⢀⣴⠿⠋⠀⠀⣾⡟⠀⢸⣿⠙⣿⠃⠘⢿⡟⠀⣰⢻⠟⠻⣿⣿⣿⣿⣿⣀⠀⠀⠘⣿⠋⠀⣿⡇⣿⡇⠀⠸⣿⡄⠀⠈⠻⣷⣄⠀⠀⠙⢷⡀⠙⣿⣆⠁
+⢀⣿⡏⠀⡞⠁⢀⡠⠞⠋⠁⠀⠀⠀⠈⠉⠀⠀⠀⠿⠀⠈⠀⠀⠀⠀⠀⣿⣿⣰⣾⣿⣿⣿⣿⣿⣿⣤⠀⠀⠀⠀⠀⠉⠀⠸⠃⠀⠀⠈⠋⠀⠀⠀⠀⠙⠳⢤⣀⠀⠹⡄⠘⣿⡄
+⣸⡟⠀⣰⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠿⠿⠿⠟⠁⠀⠹⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣧⠀⢹⣷
+⣿⠃⢠⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣄⣤⣀⠀⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⡇⠀⣿
+⣿⠀⢸⠅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⡿⠋⠉⢻⣧⢀⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢸
+⡇⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣧⡀⠀⠀⣿⣾⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⢸
+⢸⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⠿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡾
+⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣧⢀⣾⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡼⣿⣿⣾⣤⣠⡼
+                </pre>                    
+        </div>
+    </body>
+</html>

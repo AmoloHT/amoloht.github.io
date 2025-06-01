@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Making a 443MHz Jammer for Less Than $10 - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">Members</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        Making a 443MHz Jammer for Less Than $10
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Author: @br0sck
+	</p>
+
+    <div class="pre-container">
+        <pre>
+                                    ⣆⠈⠳⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠴⠒⢲
+                                    ⠘⢦⡀⠀⠙⠲⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠖⠉⠀⢀⡴⠋
+                                    ⠀⢻⣍⠲⢄⡐⠤⣉⠓⠦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠴⠚⣁⠀⠀⣀⡴⠟⣪⠇
+                                    ⠠⡤⠽⢦⣀⠈⠑⠢⢍⣒⠤⣉⡒⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠴⠚⣉⠤⢒⣩⠴⠒⠉⢁⡠⣚⢥⠀
+                                    ⠀⠙⢶⡀⠈⠙⠒⠤⣐⡪⠭⣒⡘⢍⡁⢍⣒⠢⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣖⠪⠭⠈⣉⠽⣐⠮⢕⣊⡤⠤⠒⠋⢉⡤⠊⠀
+                                    ⠀⠀⠰⡛⠓⠢⢤⣀⡀⠬⢝⣒⡪⢏⡈⠝⣒⡨⣿⢿⡑⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⠏⡰⢅⣖⡲⠾⠍⣩⢯⣒⣋⠥⢤⣒⠠⠤⠐⢛⡶⠂⠀
+                                    ⠀⠀⠀⠈⣒⠤⢄⣀⡈⠍⣒⡒⠠⠵⣏⠙⠒⢺⣅⢿⡍⠀⣇⠀⠀⠀⠀keep learning ⠀⠀⠀⢰⡏⠀⣹⢥⡗⠶⠌⣉⠯⠔⣒⣊⠩⠁⠀⣀⣠⣖⣏⠀⠀⠀
+                                    ⠀⠀⠀⠀⠑⢤⡀⠀⠈⠉⠒⠒⠫⠭⢼⣛⠒⠒⡧⣽⣏⡀⢸⡀⠀⠀⠀keep hacking!⠀⠀⠀ ⣸⠁⣈⣷⡲⡏⠉⣙⡯⠭⠥⠒⠒⠊⠉⠉⠀⢀⡴⠃⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠠⡌⠙⠒⠊⠬⠭⠥⠤⠰⣞⡉⠉⣟⡵⣯⣠⠀⠑⢤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠚⡁⢠⡾⣟⣍⡎⠭⢖⣏⣉⡥⠤⠤⠤⠤⠴⠭⡅⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠙⠲⠤⢀⡀⠀⠀⠀⠴⠦⢍⡉⢿⡜⡽⢸⢾⣦⣤⠉⡕⢲⣒⡆⠀⠀⠀⠀⠀⠀⡖⣺⠻⣏⣰⣄⣿⣟⡼⡿⣾⣞⣉⠿⠭⢐⣀⣀⣀⣀⣤⡴⠚⠁⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠰⢏⣉⠉⠀⣀⣠⢴⠖⠽⡴⣞⢿⣇⣎⠋⡇⢫⢻⡱⣞⣿⡤⡄⠀⠀⠀⠀⡼⣽⣟⡟⢿⢛⣎⡏⣾⢮⣟⣽⡷⡛⠧⢖⣒⣂⢀⣀⣀⠴⠃⠀⠀⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⢀⠖⠁⡴⢋⡤⡳⢻⢀⢿⢹⢹⢞⢳⢏⣯⣹⠳⡷⡀⠀⢀⣜⡗⣏⣹⡏⢻⣯⣻⢹⢱⣟⢼⢻⣳⡌⠑⠄⠑⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣀⠤⢒⣟⠜⢁⡎⡝⡸⡶⢻⢳⢯⣢⠻⡝⡌⢮⠿⠀⢸⣪⡎⡰⣫⢷⣻⢳⢻⠒⡿⡝⡍⣆⠱⠜⣶⠤⠄⡸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣊⠴⠻⠜⢠⡇⠃⢸⡸⠀⣧⠃⢸⢆⡼⠀⠀⠀⠘⠦⢞⡇⢪⠇⠘⣸⠀⡗⣧⢳⢸⠙⠦⠼⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢫⣠⠋⡇⢠⠎⢧⢂⡜⠢⠎⠀⠀⠀⠀⠀⠀⠀⠈⠧⠾⡄⣠⠋⢧⣠⠎⠣⡼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                                    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠙⠉⠀⠈⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+
+
+
+╔══════════════[Summary]══════════════╗
+║                                     ║
+║     1. Introduction                 ║
+║     2. Capabilities                 ║
+║     3. Materials                    ║
+║     4. Hands On!                    ║
+║       4.1 Circuit                   ║
+║       4.2 Code                      ║
+║       4.3 Time to Play!             ║
+║     5. Conclusion                   ║
+║                                     ║
+╚═════════════════════════════════════╝
+
+<a style="font-size: 20px;">Introduction</a>
+
+Without a doubt, the field of <b>hardware hacking</b> has always been fertile ground for the most curious — whether enthusiasts seeking experimentation or tech professionals who want to go beyond the abstract layers of software. Ever thought of building your own device with the explicit goal of exploring, manipulating, or even interfering with systems? Well then — intriguing, isn't it?
+
+In this paper, we’ll explore the construction of a <b>443 MHz jammer</b> on a budget of less than <b>R$50</b>, proving that with a small investment, it’s possible to obtain a functional and effective device. The goal is not only to present an affordable project but also to <b>demystify</b> part of the hardware hacking universe, making it more approachable for both beginners and those with some experience in the field.
+
+To follow along with this material, it’s expected that the reader has a basic familiarity with the Arduino ecosystem — even if superficial, like what’s learned in introductory engineering courses. Some parts will require prior knowledge to ensure a complete understanding of the proposed development.
+
+<b>Note:</b> do not use this information to harm others in any way — this paper is for educational purposes only. Everyone is responsible for their own actions.
+
+Shall we continue??
+
+<a style="font-size: 20px;">Capabilities</a>
+
+A 443 MHz jammer may seem simple at first, but it has its capabilities. Even though it's small, it can block:
+    * Remote controls for automatic gates
+    * Car keys and alarms
+    * IoT devices (Internet of Things)
+    * Home alarm systems
+
+These are just a few examples.
+
+<a style="font-size: 20px;">Materials</a>
+
+Before we actually get started, we’ll need the following materials:
+    * <b>Digispark Attiny85 ($5)</b>:
+        Being a compact, low-cost board with USB input, it's ideal for easy connection and storing the code.
+    * <b>FS1000A Transmitter Module (R$2)</b>:
+        This will handle the main task — jamming the signal :).
+    * <b>2DBI Helical Antenna (R$1)</b>:
+        Required for the FS1000A module to operate at 433 MHz; otherwise, it will default to 315 MHz.
+
+<b>Note</b>: If the average price is incorrect, please ignore it, as we are Brazilian and do not know exactly how much each item costs in America.
+
+Shall we get to work?!
+
+<a style="font-size: 20px;">Let's Get to Work!</a>
+
+<a style="font-size: 15px;">Circuit</a>
+
+<img src="imgs/433mhz_jammer_circuit.png" />
+
+The FS1000A module has <b>3 pins</b>, which are DATA, VCC, and GND, meaning:
+    * <b>DATA</b>: Data output. Since it's a transmitter, it only sends data (output).
+    * <b>VCC</b>: Power supply input, operating at 3.3V to 5V.
+    * <b>GND</b>: Zero volt reference point (not exactly the same as negative, but can be understood as the negative/neutral pole).
+
+VCC of the FS1000A should be connected to VIN on the Digispark Attiny85.  
+GND of the FS1000A should be connected to GND on the Digispark Attiny85.  
+DATA of the FS1000A should be connected to P0 on the Digispark Attiny85 (where it will output the data).
+
+<b>Important detail</b>: the area circled in blue is where you must solder the 2DBI helical antenna. This step is mandatory — otherwise, the jammer will operate at 315 MHz.
+
+<a style="font-size: 15px;">Code</a>
+
+╔═════════════════════════════════════════════════════════════════════════════════╗
+║ #define FS1000A_PIN 0                                                           ║
+║                                                                                 ║
+║ void setup() {                                                                  ║
+║   pinMode(FS1000A_PIN, OUTPUT);                                                 ║
+║   digitalWrite(FS1000A_PIN, LOW);                                               ║
+║ }                                                                               ║
+║                                                                                 ║
+║ void loop() {                                                                   ║
+║     for (int sequence = 1; sequence < 50; sequence++) {                         ║
+║         for(int duration = 1; duration <= 3; duration++) {                      ║
+║             digitalWrite(FS1000A_PIN, HIGH);                                    ║
+║             for (int widthsize = 1; widthsize <= (1 + sequence); widthsize++) { ║
+║                 delayMicroseconds(50);                                          ║
+║             }                                                                   ║
+║             digitalWrite(FS1000A_PIN, LOW);                                     ║
+║             for (int widthsize = 1; widthsize <= (1 + sequence); widthsize++) { ║
+║                 delayMicroseconds(50);                                          ║
+║             }                                                                   ║
+║         }                                                                       ║
+║     }                                                                           ║
+║ }                                                                               ║
+╚═════════════════════════════════════════════════════════════════════════════════╝
+
+╔═══════════════════════╗
+║ #define FS1000A_PIN 0 ║
+╚═══════════════════════╝
+Defines pin 0 on the Digispark as the output for the FS1000A RF transmitter module.
+
+╔═════════════════════════════════════╗
+║ void setup() {                      ║
+║     pinMode(FS1000A_PIN, OUTPUT);   ║
+║     digitalWrite(FS1000A_PIN, LOW); ║
+║ }                                   ║
+╚═════════════════════════════════════╝
+Configures the pin as an output and ensures it starts in a LOW state (no transmission).
+
+╔═════════════════════════════════════════════════════════╗
+║ void loop() {                                           ║
+║     for (int sequence = 1; sequence < 50; sequence++) { ║
+╚═════════════════════════════════════════════════════════╝
+Starts a loop of 49 iterations, where the value of sequence increases from 1 to 49. This modifies the "length" of the pulses being emitted.
+
+╔════════════════════════════════════════════════════╗
+║ for(int duration = 1; duration <= 3; duration++) { ║
+╚════════════════════════════════════════════════════╝
+Repeats 3 times for each sequence value. This generates 3 similar pulses for each sequence configuration.
+
+╔═════════════════════════════════════════════════════════════════════╗
+║ digitalWrite(FS1000A_PIN, HIGH);                                    ║
+║ for (int widthsize = 1; widthsize <= (1 + sequence); widthsize++) { ║
+║     delayMicroseconds(50);                                          ║
+║ }                                                                   ║
+╚═════════════════════════════════════════════════════════════════════╝
+Turns the transmitter ON for a time proportional to sequence × 50µs. During this time, it emits pulses.
+
+╔═════════════════════════════════════════════════════════════════════╗
+║ digitalWrite(FS1000A_PIN, LOW);                                     ║
+║ for (int widthsize = 1; widthsize <= (1 + sequence); widthsize++) { ║
+║     delayMicroseconds(50);                                          ║
+║ }                                                                   ║
+╚═════════════════════════════════════════════════════════════════════╝
+Turns the transmitter OFF and pauses for a time, creating a symmetrical wave.
+
+In summary, the code sends radio signals by quickly turning pin 0 on and off. These pulses gradually increase in duration — meaning it starts by sending very short bursts and, with each repetition, makes them slightly longer. This results in interference if other devices attempt to communicate over this frequency.
+
+Next, compile the code and let’s move on to the testing phase ;).
+
+<a style="font-size: 15px;">Game Time!</a>
+
+Now that everything is set up, you can test it on one of the devices mentioned under Capabilities (with permission, of course).
+
+Unfortunately, I wasn’t able to extract the video from my camera as a proof of concept (PoC), but I’m still working on it — so if you're interested, check back on this paper occasionally to see the PoC.
+
+<a style="font-size: 20px;">Conclusion</a>
+
+Building a 443 MHz jammer on a low budget not only demonstrates the power of experimentation within <b>hardware hacking</b>, but also reinforces how it’s possible to explore, learn, and interact with real-world systems using limited resources. This project shows that technical knowledge, combined with creativity, can break barriers and make accessible what once seemed exclusive to professionals or advanced labs.
+
+More than just assembling a circuit or compiling code, what we propose here is a hands-on experience — an invitation for the reader to explore the boundaries of electronics and wireless communication, understanding not just the “how”, but especially the “why” behind each step.
+
+Finally, we emphasize the ethical commitment: this content is <b>educational</b>. Use it responsibly, as knowledge without awareness can become a weapon — but with purpose and ethics, it becomes a tool for growth.
+
+See you in the next creation?
+
+⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢻⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠀
+⠀⠸⠀⠇⠀⠀⠀⠀⠀⠀⠀⠀⢠⡼⠀
+⠀⡿⠲⠀⠐⠀⠀⠀⠀⠀⠀⠀⢲⠸⡄
+⠀⢧⠀⠙⣀⠀⠀⠀⠀⠀⠀⣸⡟⢠⡄
+⠀⠰⡄⠀⠈⠀⢦⠀⠀⠀⢀⣻⠁⠼⠀
+⠀⠀⠨⡄⠀⠈⢯⣁⠀⣠⡴⡍⡴⠁⠀
+⠀⠀⠀⠈⠢⠀⠈⡉⣭⣳⣿⠕⠀⠀⠀
+⠀⠀⠀⠀⢠⡐⢿⡿⣯⣿⣈⢷⡦⠀⠀
+⠀⠀⠀⣰⠟⡰⣿⡷⢵⢮⢯⣅⡟⠈⠀
+⠀⠀⠈⠼⠿⢘⠁⢻⣯⢎⢵⡧⠻⠶⠀
+⠀⠀⠀⠀⠀⠈⠡⢄⠫⠋⠘⠁⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⡷⣗⠇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⡰⣷⣿⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⡨⡿⢿⠇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⢸⡿⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠸⠇⠀⠀⠀⠀⠀⠀⠀
+                </pre>                    
+        </div>
+    </body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <title>Members - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    table#list {
+        text-align: center;
+        font-family: monospace;
+        background-color: #1e1e1e7d;
+        border-collapse: collapse;
+        width: 25%;
+        margin: 0 auto;
+        border: 2px solid rgba(255, 255, 255, 0.75);
+    }
+
+    table#list th, table#list td {
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        padding: 10px;
+    }
+
+    table#list th {
+        color: white;
+    }
+
+    table#list td {
+        color: white;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../">❮─❲Home❳─❯</a>
+        <a href="../papers/">❮─❲Papers❳─❯</a>
+        <a href="index.html" class="active">❮─❲✧Members✧❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+        Members
+    </h1>
+
+    <div>
+        <table id="list">
+            <thead>
+                <tr>
+                    <th style="width:25%"><a>Username</a></th>
+                    <th style="width:20%"><a>Country</a></th>
+                    <th style="width:25%"><a>Social Network</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Br0sck</td>
+                    <td>BR</td>
+                    <td class="date"><a style="color:white;" href="https://www.instagram.com/br0sck">Instagram</a></td>
+                </tr>
+                <tr>
+                    <td>MatheuZSecurity</td>
+                    <td>BR</td>
+                    <td class="date"><a style="color:white;" href="https://www.youtube.com/c/MatheuZSecurity">Youtube</a></td>
+                </tr>
+                <tr>
+                    <td>Ferreiraklet</td>
+                    <td>BR</td>
+                    <td class="date"><a style="color:white;" href="https://www.instagram.com/ferreiraklet/">Instagram</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
