@@ -242,7 +242,7 @@ O n8n permite criarmos multiplos agentes, se preciso, conseguimos integra-los fa
 
 <a style="font-size: 20px;">Automações Agenticas</a>
 
-Antes de seguir, gostaria de deixar uma fala do Jason Haddix, em um dos Podcasts do CTBB ( Critical Thinking Bug Bounty Podcast ), Jason fala que seu uso de IA / Metodologia consiste em 3 tipos de agentes:
+Antes de seguir, gostaria de deixar uma fala do Jason Haddix, em um dos Podcasts do CTBB (Critical Thinking Bug Bounty Podcast), Jason fala que seu uso de IA/Metodologia consiste em 3 tipos de agentes:
 - Agentes 100% automaticos: aqueles que são executados por meio de um trigger, ele menciona um agente que retesta vulnerabilidades da Hackerone, sempre que surge um novo email de pedido de reteste
 - Agentes de Parsing: Aqueles que são usados para parsear, codificar, encryptar ou realizar alguma ação de modificação, que antes era manual, agora passou para automatizado, facilitando testes. Ex: Encoding multiplos, parsear HTTP Requests
 - Agentes semi-automatizados: Agentes que realizam ações, no entanto não fazem tudo, necessitando de verificação e posteriormente ações em cima do output recebido.
@@ -470,21 +470,21 @@ Logo em seguida, usar o pequeno chat para interagir
 
 <img src="imgs/llm_image_5.png"> 
 
-Nesse caso acima, utilizei um modelo rodando localmente para realizar a ação ( O modelo Gemma3 da google ), qualquer IA pode ser usada, tanto localmente, quanto via API.
+Nesse caso acima, utilizei um modelo rodando localmente para realizar a ação (O modelo Gemma3 da google), qualquer IA pode ser usada, tanto localmente, quanto via API.
 Observe que, alucinações sempre podem aparecer, portanto, nunca envie seu report diretamente sem realizar uma análise previa e aplicar mudanças!.
 
 
 <a style="font-size: 15px;">Agentes para analise em ambientes GraphQL</a>
 
 Ambientes de GraphQL atualmente são minas de ouro, muitos pesquisadores acabam por ignorar esses ambientes, mas eles mostram-se extremamente valiosos em questões de vulnerabilidade.
-Diante desse fato, desenvolvi um agente para montar queries e mutations de graphql, para requisições que precisam de graphql mais facilmente, para ser inputada no proxy de seu gosto ( Caido ou Burp, Caido >>>), facilitando essa construção.
+Diante desse fato, desenvolvi um agente para montar queries e mutations de graphql, para requisições que precisam de graphql mais facilmente, para ser inputada no proxy de seu gosto (Caido ou Burp, Caido >>>), facilitando essa construção.
 
 Veja:
 <b>Prompt:</b>
 <pre>
 # IDENTITY and PURPOSE
 
-You organize graphql queries and mutations to proxy ( Burp Suite ) users. You are a profissional of GraphQL and queries.
+You organize graphql queries and mutations to proxy (Burp Suite) users. You are a profissional of GraphQL and queries.
 
 Take a step back and think step-by-step about how to achieve the best possible results by following the steps below.
 
@@ -592,7 +592,7 @@ Para isso, criei um prompt que é responsavel por gerar uma HTTP Request simples
 <pre>
 # IDENTITY and PURPOSE
 
-You organize json / js queries and requests to proxy ( Burp Suite ) users. You are a profissional of request queries.
+You organize json/js queries and requests to proxy (Burp Suite) users. You are a profissional of request queries.
 
 Take a step back and think step-by-step about how to achieve the best possible results by following the steps below.
 
