@@ -171,11 +171,11 @@
 ╚═════════════════════════════════════════════════════════╝
 
 
-<a style="font-size: 20px;">Introduction</a>
+<a style="font-size: 23px;">Introduction</a>
 
 The year 2025 started off with a bang. Right from the beginning, we saw several new LLM model releases — this is definitely the <b>year of AIs.</b> With that in mind, these models have evolved significantly, and it's important to highlight some of the capabilities they possess which will be useful for <b>bug hunters and security researchers</b>, enhancing their workflow by working in parallel with these AIs and delegating to them tasks that involve multiple actions — yet still achievable with current models.
 
-<a style="font-size: 20px;">The Year of AI Agents</a>
+<a style="font-size: 23px;">The Year of AI Agents</a>
 
 Among the current model capabilities available today, their effectiveness in information analysis stands out. Before continuing, it's important to understand what a token is: a <b>token</b> is simply a group of words, characters, or phrases. The amount of information a model can receive is measured in tokens, meaning there's a limit to how many words, characters, and sentences can be processed.
 
@@ -187,7 +187,7 @@ Examples of AI agents:
 * Albert Einstein Agent: this agent "knows" everything about Albert Einstein and can answer questions or generate texts based on that knowledge.
 * Spreadsheet Agent: built specifically to edit and manage spreadsheets in Excel or Google Docs.
 
-<a style="font-size: 20px;">A Bit About Prompt Engineering</a>
+<a style="font-size: 23px;">A Bit About Prompt Engineering</a>
 
 Before diving into the practical part of this article, it's essential to understand a few concepts about Prompt Engineering.
 
@@ -210,7 +210,7 @@ The System Prompt consists of the behind-the-scenes instructions you set before 
 <b>"Always respond like a pirate."</b>  
 <b>"Use northeastern Brazilian slang in your replies."</b>
 
-<a style="font-size: 20px;">Tools</a>
+<a style="font-size: 23px;">Tools</a>
 
 Beginning the deep dive into using LLMs for cybersecurity, pentesting, and bug bounty, I’ll introduce some tools that help in this process.
 
@@ -243,7 +243,7 @@ n8n is practical and visual. It lets you create workflows using AI agents in a w
 In this image, the "trigger"—the action that calls the AI—is a chat message, but note that it can be other types of integrations as well, such as a Telegram message, email, among many others.  
 n8n allows us to create multiple agents; if necessary, we can easily integrate them and assign various modifications—however, those will not be covered in this article.
 
-<a style="font-size: 20px;">Agentic Automations</a>
+<a style="font-size: 23px;">Agentic Automations</a>
 
 Before moving on, I'd like to highlight a quote from Jason Haddix in one of the CTBB (Critical Thinking Bug Bounty) Podcast episodes. Jason explains that his use of AI/methodology consists of 3 types of agents:
 - 100% automated agents: these are triggered automatically. He mentions an agent that retests HackerOne vulnerabilities every time a new retest request email arrives.
@@ -307,7 +307,7 @@ With all that in mind, we’re now ready for the next chapter.
 
 ---
 
-<a style="font-size: 15px;">Agents for Bug Bounty Report</a>
+<a style="font-size: 18px;">Agents for Bug Bounty Report</a>
 
 That said, now that you have a basic understanding of what AI Agents are, the first one to be explored in this article is the **"write_hackerone_report"**.
 
@@ -476,7 +476,7 @@ Right after that, use the small chat interface to interact.
 In the example above, I used a locally running model to perform the action (Google’s Gemma3 model). Any AI can be used, whether local or via API.  
 Note that hallucinations may still occur, so never send your report directly without prior review and making the necessary adjustments!
 
-<a style="font-size: 15px;">Agents for GraphQL Environment Analysis</a>
+<a style="font-size: 18px;">Agents for GraphQL Environment Analysis</a>
 
 GraphQL environments are currently gold mines. Many researchers end up ignoring them, but they prove to be extremely valuable in terms of vulnerabilities.  
 Given this, I developed an agent that helps generate GraphQL queries and mutations more easily, for requests that require GraphQL, making them easier to input into your proxy of choice (Caido or Burp, Caido >>>), simplifying the construction process.
@@ -583,7 +583,7 @@ Using in n8n:
 
 <img src="imgs/llm_image_6.png">
 
-<a style="font-size: 15px;">Agent for Request Crafting</a>
+<a style="font-size: 18px;">Agent for Request Crafting</a>
 
 JavaScript files are extremely valuable for bug hunters and pentesters. These files often contain undocumented endpoints and routes, and may even include paths for different actions that are hidden or forgotten.  
 Therefore, it's very important to keep an eye out for possible routes that exist within JavaScript files.
@@ -726,7 +726,7 @@ What this agent basically does is:
 3. If it's a POST request, it builds the request body based on the code  
 4. Uses the host if it exists in the code; otherwise, it uses a placeholder host  
 
-<a style="font-size: 15px;">Agent for JavaScript Analysis</a>
+<a style="font-size: 18px;">Agent for JavaScript Analysis</a>
 
 This next one was developed by the hunter @xssdoctor. It analyzes JavaScript files, generating a series of descriptions about them, as if it were a summarize-javascript agent.  
 This helps identify promising JavaScript files and allows us to expand our manual testing in search of vulnerabilities.
@@ -808,7 +808,7 @@ Just like before, it can also be used in N8N
 
 <img src="imgs/llm_image_7.png">
 
-<a style="font-size: 20px;">Conclusion</a>
+<a style="font-size: 23px;">Conclusion</a>
 
 Well, that’s it — I have nothing more to write.  
 The main goal of this article was to bring you a different introduction to how AI can be used to enhance tasks and activities, specifically in the field of information security — helping boost your work as a bug hunter, pentester, or improving your Prompt Engineering skills and understanding of AI Agents in this Agentic Generation.

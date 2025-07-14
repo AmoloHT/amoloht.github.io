@@ -147,7 +147,7 @@
 ╚═════════════════════════════════════╝
 
 
-<a style="font-size: 20px;">Introdução</a>
+<a style="font-size: 23px;">Introdução</a>
 
 Sem sombra de dúvida, o campo do <b>hardware hacking</b> sempre foi terreno fértil para os mais curiosos — sejam entusiastas em busca de experimentação ou profissionais da tecnologia que desejam ir além das camadas abstratas do software. Já imaginou construir seu próprio dispositivo com o objetivo explícito de explorar, manipular ou mesmo interferir em sistemas? Pois bem — curioso, não?
 
@@ -159,7 +159,7 @@ Para acompanhar este material, espera-se que o leitor tenha uma familiaridade m�
 
 Podemos continuar??
 
-<a style="font-size: 20px;">Capacidade</a>
+<a style="font-size: 23px;">Capacidade</a>
 
 Um jammer de 443 MHz pode parecer simples no primeiro momento, porém ele tem sua capacidade. Mesmo pequeno, ele é capaz de bloquear:
     * Controles remotos de portões automáticos
@@ -169,7 +169,7 @@ Um jammer de 443 MHz pode parecer simples no primeiro momento, porém ele tem su
 
 Estes são apenas alguns dos exemplos.
 
-<a style="font-size: 20px;">Materiais</a>
+<a style="font-size: 23px;">Materiais</a>
 
 Antes de darmos inicio de fato, precisamos dos seguintes materiais:
     * <b>Digispark Attiny85 (R$30)</b>:
@@ -181,9 +181,9 @@ Antes de darmos inicio de fato, precisamos dos seguintes materiais:
 
 Mãos à obra?!
 
-<a style="font-size: 20px;">Mãos à Obra!</a>
+<a style="font-size: 23px;">Mãos à Obra!</a>
 
-<a style="font-size: 15px;">Circuito</a>
+<a style="font-size: 18px;">Circuito</a>
 
 <img src="imgs/433mhz_jammer_circuit.png" />
 
@@ -198,7 +198,7 @@ DATA do FS1000A será ligado em P0 do Digispark Attiny85 (onde realizará o OUTP
 
 <b>Detalhe importante</b>: onde está circulado de azul, é aonde você irá soldar a antena helicoidal 2DBI. Essa etapa é obrigatória, caso ao contrário, o jammer irá operar em 315 MHz.
 
-<a style="font-size: 15px;">Código</a>
+<a style="font-size: 18px;">Código</a>
 
 ╔═════════════════════════════════════════════════════════════════════════════════╗
 ║ #define FS1000A_PIN 0                                                           ║
@@ -268,13 +268,21 @@ Em resumo, o código envia sinais de rádio ligando e desligando o pino 0 rapida
 
 Em seguida, compile o código e vamos para a etapa de teste ;).
 
-<a style="font-size: 15px;">Hora do jogo!</a>
+<a style="font-size: 18px;">Hora do jogo!</a>
 
 Agora que está tudo pronto, você pode testar em algum dos dispositivos citados em Capacidade (com permissão, claro).
 
-Infelizmente não consegui extrair o vídeo de minha câmera como prova de conceito (PoC), ainda irei tentar, então caso tenha interesse, confira este paper algumas vezes para ver a PoC.
+Gravei e disponibilizei uma prova de conceito do ataque em ação:
 
-<a style="font-size: 20px;">Conclusão</a>
+<iframe width="560" height="315" 
+    src="https://www.youtube.com/embed/cnxNWZz7ig0" 
+    title="PoC" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+</iframe>
+
+<a style="font-size: 23px;">Conclusão</a>
 
 A construção de um jammer de 443 MHz com baixo custo não apenas demonstra o poder da experimentação dentro do <b>hardware hacking</b>, mas também reforça como é possível explorar, aprender e intervir em sistemas reais com recursos limitados. Este projeto mostra que o conhecimento técnico, aliado à criatividade, é capaz de ultrapassar barreiras e tornar acessível o que antes parecia exclusivo de profissionais ou laboratórios avançados.
 

@@ -171,11 +171,11 @@
 ╚═════════════════════════════════════════════════════════╝
 
 
-<a style="font-size: 20px;">Introdução</a>
+<a style="font-size: 23px;">Introdução</a>
 
 O ano de 2025 começou fervendo. Logo de cara, tivemos diversos lançamentos de novos modelos de LLM, este é, definitivamente, o <b>ano das IAs.</b> Sabendo disso, os modelos vêm avançando muito, e é importante ressaltar algumas habilidades que eles possuem e que serão úteis para <b>bug hunters e pesquisadores de segurança</b>, aprimorando seu fluxo de trabalho ao atuar em paralelo com essas IAs e delegando a elas tarefas que envolvem múltiplas ações, mas ainda viáveis para os modelos atuais.
 
-<a style="font-size: 20px;">Ano dos Agentes de IA</a>
+<a style="font-size: 23px;">Ano dos Agentes de IA</a>
 
 Entre as características dos modelos hoje disponíveis, destaca-se a extrema eficácia na análise de informação. Antes de continuar, é preciso entender o que é um token: <b>token</b> nada mais é do que um conjunto de palavras, caracteres ou frases. A quantidade de informação que um modelo pode receber é medida em tokens, ou seja, há um limite de palavras, caracteres e frases que podem ser processados.
 
@@ -187,7 +187,7 @@ Exemplos de agentes de IA:
 * Agente Albert Einstein: esse agente "sabe" tudo sobre Albert Einstein e pode responder a perguntas ou gerar textos a partir desse repertório.
 * Agente de planilha: construído especificamente para modificar e gerenciar planilhas no Excel ou no Google Docs.
 
-<a style="font-size: 20px;">Um pouco sobre Prompt Engineering</a>
+<a style="font-size: 23px;">Um pouco sobre Prompt Engineering</a>
 
 Antes de partir para a parte prática do artigo, é fundamental entender alguns conceitos sobre Engenharia de Prompt.
 
@@ -211,7 +211,7 @@ O System Prompt consiste nas instruções que você define “por trás das câm
 
 <b>"Use gírias nordestinas nas suas falas."</b>
 
-<a style="font-size: 20px;">Ferramentas</a>
+<a style="font-size: 23px;">Ferramentas</a>
 
 Dando início ao aprofundamento no uso de LLMs para cibersegurança, pentesting e bug bounty, apresentarei algumas ferramentas que ajudam nesse processo.
 
@@ -240,7 +240,7 @@ O n8n, é prático e visual, ele permite criar workflows usando agentes de IA, d
 Nessa imagem, o "trigger", a ação que chama a IA, será uma mensagem em chat, mas note que pode ser outras diversas integrações, como mensagem no telegram, email, entre diversos outros.
 O n8n permite criarmos multiplos agentes, se preciso, conseguimos integra-los facilmente, e atribuir diversas modificações, no entanto, elas não serão abordadas nesse artigo.
 
-<a style="font-size: 20px;">Automações Agenticas</a>
+<a style="font-size: 23px;">Automações Agenticas</a>
 
 Antes de seguir, gostaria de deixar uma fala do Jason Haddix, em um dos Podcasts do CTBB (Critical Thinking Bug Bounty Podcast), Jason fala que seu uso de IA/Metodologia consiste em 3 tipos de agentes:
 - Agentes 100% automaticos: aqueles que são executados por meio de um trigger, ele menciona um agente que retesta vulnerabilidades da Hackerone, sempre que surge um novo email de pedido de reteste
@@ -304,7 +304,7 @@ Tendo tudo isso em mente, agora estamos preparados para o próximo capítulo.
 
 ---
 
-<a style="font-size: 15px;">Agentes para Bug Bounty Report</a>
+<a style="font-size: 18px;">Agentes para Bug Bounty Report</a>
 
 Dito tudo isso, agora que você já tem um pouco de noção sobre o que são Agentes de IA, o primeiro a ser trabalhado nesse artigo é o "write_hackerone_report".
 
@@ -474,7 +474,7 @@ Nesse caso acima, utilizei um modelo rodando localmente para realizar a ação (
 Observe que, alucinações sempre podem aparecer, portanto, nunca envie seu report diretamente sem realizar uma análise previa e aplicar mudanças!.
 
 
-<a style="font-size: 15px;">Agentes para analise em ambientes GraphQL</a>
+<a style="font-size: 18px;">Agentes para analise em ambientes GraphQL</a>
 
 Ambientes de GraphQL atualmente são minas de ouro, muitos pesquisadores acabam por ignorar esses ambientes, mas eles mostram-se extremamente valiosos em questões de vulnerabilidade.
 Diante desse fato, desenvolvi um agente para montar queries e mutations de graphql, para requisições que precisam de graphql mais facilmente, para ser inputada no proxy de seu gosto (Caido ou Burp, Caido >>>), facilitando essa construção.
@@ -581,7 +581,7 @@ Usando no n8n:
 
 <img src="imgs/llm_image_6.png">
 
-<a style="font-size: 15px;">Agente para montagem de requisições</a>
+<a style="font-size: 18px;">Agente para montagem de requisições</a>
 
 Os arquivos JavaScript são lugares muito valiosos para bug hunters e pentesters, os arquivos JavaScript muitas vezes guardam endpoints e rotas não documentadas, além disso, podem conter rotas para diferentes ações escondidas ou esquecidas. 
 Desse modo, é muito importante ficar de olho em possiveis rotas que existam em arquivos JavaScript.
@@ -724,7 +724,7 @@ O que esse agente faz basicamente é:
 3. Se for POST, montar com o corpo identificando o código.
 4. Usar o host se ele existir no código, caso contrário, usar um host fictício.
 
-<a style="font-size: 15px;">Agente para análise em JavaScripts</a>
+<a style="font-size: 18px;">Agente para análise em JavaScripts</a>
 
 Esse seguinte, foi desenvolvido pelo hunter @xssdoctor, ele consiste em analisar arquivos JavaScript, criando uma série de descrições sobre ele, como se fosse um summarize-javascript. Isso ajuda a identificar possíveis JavaScript promissores, e fazer com que possamos abranger mais nos testes manuais a procura de vulnerabilidades.
 
@@ -804,7 +804,7 @@ Da mesma forma, pode ser usado no N8N
 
 <img src="imgs/llm_image_7.png">
 
-<a style="font-size: 20px;">Conclusão</a>
+<a style="font-size: 23px;">Conclusão</a>
 
 Bom, é isso, não tenho nada mais a escrever. 
 O maior objetivo desse artigo é trazer para você uma introdução diferente em como usar IA para impulsionar tarefas e atividades, especificamente relacionadas a segurança da informação, para impulsionar seu trabalho como bug hunter, pentester, ou aprimorar as suas capacidades de Prompt Engineering e entendimento sobre Agentes de IA nessa geração Agentica.
